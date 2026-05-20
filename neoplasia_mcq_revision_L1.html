@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neoplasia — MCQ Revision</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F3EE;
+  --surface:#FFFFFF;
+  --surface2:#EFECEA;
+  --border:rgba(0,0,0,0.09);
+  --border-strong:rgba(0,0,0,0.16);
+  --text:#1C1A17;
+  --text-muted:#6A6760;
+  --text-hint:#9A9890;
+  --accent:#1B4FD8;
+  --accent-bg:#EBF0FD;
+  --correct:#166534;
+  --correct-bg:#DCFCE7;
+  --correct-border:#4ADE80;
+  --wrong:#991B1B;
+  --wrong-bg:#FEE2E2;
+  --wrong-border:#F87171;
+  --reveal-bg:#F0FDF4;
+  --section-a:#3C3489;
+  --section-a-bg:#EEEDFE;
+  --section-b:#0F6E56;
+  --section-b-bg:#E1F5EE;
+  --section-c:#993C1D;
+  --section-c-bg:#FAECE7;
+  --section-d:#185FA5;
+  --section-d-bg:#E6F1FB;
+  --radius:12px;
+  --radius-sm:7px;
+}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:2.5rem 1rem 4rem}
+.page-wrap{max-width:780px;margin:0 auto}
+
+/* HEADER */
+header{margin-bottom:2.5rem}
+.kicker{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-hint);margin-bottom:0.6rem}
+h1{font-family:'Crimson Pro',serif;font-size:2.4rem;font-weight:600;line-height:1.12;margin-bottom:0.4rem}
+.subtitle{font-size:15px;color:var(--text-muted);font-weight:300;margin-bottom:1.25rem}
+
+/* SECTION TABS */
+.section-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
+.s-tab{font-size:12px;font-weight:500;padding:4px 12px;border-radius:999px;cursor:pointer;border:0.5px solid transparent;transition:opacity 0.15s;letter-spacing:0.01em}
+.s-tab:hover{opacity:0.8}
+.s-tab.active{opacity:1}
+.s-tab.all{background:var(--text);color:#fff}
+.s-tab[data-section="A"]{background:var(--section-a-bg);color:var(--section-a);border-color:var(--section-a)}
+.s-tab[data-section="B"]{background:var(--section-b-bg);color:var(--section-b);border-color:var(--section-b)}
+.s-tab[data-section="C"]{background:var(--section-c-bg);color:var(--section-c);border-color:var(--section-c)}
+.s-tab[data-section="D"]{background:var(--section-d-bg);color:var(--section-d);border-color:var(--section-d)}
+
+/* STATS */
+.stats-row{display:flex;gap:1.25rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.stat{font-size:13px;color:var(--text-muted)}
+.stat strong{color:var(--text);font-weight:500}
+.score-pill{font-family:'DM Mono',monospace;font-size:12px;padding:3px 10px;border-radius:999px;background:var(--accent-bg);color:var(--accent);margin-left:auto;font-weight:500}
+.progress-track{height:3px;background:var(--border-strong);border-radius:999px;overflow:hidden;margin-bottom:2rem}
+.progress-fill{height:100%;background:var(--accent);border-radius:999px;transition:width 0.45s ease;width:0%}
+
+/* SECTION HEADERS */
+.section-header{display:flex;align-items:center;gap:10px;margin:2rem 0 1rem}
+.section-badge{font-size:11px;font-weight:600;padding:3px 11px;border-radius:999px;letter-spacing:0.04em}
+.section-badge.A{background:var(--section-a-bg);color:var(--section-a)}
+.section-badge.B{background:var(--section-b-bg);color:var(--section-b)}
+.section-badge.C{background:var(--section-c-bg);color:var(--section-c)}
+.section-badge.D{background:var(--section-d-bg);color:var(--section-d)}
+.section-title{font-family:'Crimson Pro',serif;font-size:1.15rem;font-weight:600;color:var(--text)}
+.section-count{font-size:12px;color:var(--text-hint);font-family:'DM Mono',monospace}
+
+/* QUESTION CARDS */
+.questions-list{display:flex;flex-direction:column;gap:1.25rem}
+.q-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:border-color 0.25s}
+.q-card.answered-correct{border-color:var(--correct-border)}
+.q-card.answered-wrong{border-color:var(--wrong-border)}
+.q-card.hidden{display:none}
+
+.q-meta{display:flex;align-items:center;gap:7px;margin-bottom:0.85rem;flex-wrap:wrap}
+.q-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-hint);letter-spacing:0.05em}
+.q-badge{font-size:11px;font-weight:500;padding:2px 9px;border-radius:999px}
+.q-badge.A{background:var(--section-a-bg);color:var(--section-a)}
+.q-badge.B{background:var(--section-b-bg);color:var(--section-b)}
+.q-badge.C{background:var(--section-c-bg);color:var(--section-c)}
+.q-badge.D{background:var(--section-d-bg);color:var(--section-d)}
+.q-type{font-size:11px;padding:2px 8px;border-radius:999px;border:0.5px solid var(--border-strong);color:var(--text-muted);margin-left:auto}
+
+.q-text{font-size:15.5px;line-height:1.65;margin-bottom:1rem;color:var(--text)}
+.vignette{background:var(--surface2);border-left:3px solid var(--border-strong);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:0.8rem 1rem;margin-bottom:0.9rem;font-size:14px;color:var(--text-muted);line-height:1.6;font-style:italic}
+.vignette strong{color:var(--text);font-style:normal}
+
+.options{display:flex;flex-direction:column;gap:7px}
+.opt-btn{display:flex;align-items:flex-start;gap:9px;background:var(--surface2);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:9px 13px;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;font-size:14px;color:var(--text);transition:background 0.14s,border-color 0.14s;width:100%;line-height:1.5}
+.opt-btn:hover:not(:disabled){background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+.opt-btn:disabled{cursor:default}
+.opt-btn.selected-correct{background:var(--correct-bg);border-color:var(--correct-border);color:var(--correct)}
+.opt-btn.selected-wrong{background:var(--wrong-bg);border-color:var(--wrong-border);color:var(--wrong)}
+.opt-btn.reveal-correct{background:var(--reveal-bg);border-color:var(--correct-border);color:var(--correct);opacity:0.8}
+.opt-letter{font-family:'DM Mono',monospace;font-size:10.5px;font-weight:500;min-width:17px;height:17px;border-radius:3px;background:rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;margin-top:2px;flex-shrink:0}
+
+.explanation{display:none;margin-top:0.9rem;padding:0.85rem 1rem;background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:13.5px;color:var(--text-muted);line-height:1.65}
+.explanation.visible{display:block}
+.explanation strong{color:var(--text);font-weight:500}
+
+/* RESULT */
+.result-panel{display:none;background:var(--surface);border:0.5px solid var(--border);border-radius:var(--radius);padding:2.5rem 2rem;text-align:center;margin-top:2rem}
+.result-panel.visible{display:block}
+.result-score{font-family:'Crimson Pro',serif;font-size:5rem;font-weight:600;color:var(--accent);line-height:1;margin-bottom:0.25rem}
+.result-label{font-size:14px;color:var(--text-hint);font-family:'DM Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:1.25rem}
+.section-breakdown{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:1.25rem 0 1.5rem}
+.breakdown-card{padding:0.75rem;border-radius:var(--radius-sm);font-size:13px;border:0.5px solid var(--border)}
+.breakdown-card .bd-label{font-size:11px;color:var(--text-hint);margin-bottom:3px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.05em}
+.breakdown-card .bd-score{font-size:1.5rem;font-weight:500;font-family:'Crimson Pro',serif}
+.result-message{font-size:14.5px;color:var(--text-muted);max-width:460px;margin:0 auto 1.5rem;line-height:1.65}
+.reset-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);padding:10px 28px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:opacity 0.15s}
+.reset-btn:hover{opacity:0.85}
+
+@media(max-width:520px){h1{font-size:1.85rem}.q-card{padding:1.1rem}}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<header>
+  <p class="kicker">Bachelor of Medical Imaging · Pathology Revision</p>
+  <h1>Neoplasia</h1>
+  <p class="subtitle">30 MCQs across nomenclature, tumour characteristics, carcinogenesis, and clinical vignettes</p>
+
+  <div class="section-tabs">
+    <button class="s-tab all active" onclick="filterSection('all',this)">All 30</button>
+    <button class="s-tab" data-section="A" onclick="filterSection('A',this)">A — Nomenclature (8)</button>
+    <button class="s-tab" data-section="B" onclick="filterSection('B',this)">B — Benign vs Malignant (8)</button>
+    <button class="s-tab" data-section="C" onclick="filterSection('C',this)">C — Carcinogenesis (6)</button>
+    <button class="s-tab" data-section="D" onclick="filterSection('D',this)">D — Clinical Vignettes (8)</button>
+  </div>
+
+  <div class="stats-row">
+    <span class="stat"><strong id="answered-count">0</strong> / <span id="visible-count">30</span> answered</span>
+    <span class="stat"><strong id="correct-count">0</strong> correct</span>
+    <span class="score-pill" id="pct-pill">0%</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+</header>
+
+<div id="quiz"></div>
+<div class="result-panel" id="result-panel">
+  <div class="result-score" id="result-score"></div>
+  <div class="result-label">Final Score</div>
+  <div class="section-breakdown" id="section-breakdown"></div>
+  <p class="result-message" id="result-message"></p>
+  <button class="reset-btn" onclick="resetQuiz()">Retake quiz</button>
+</div>
+</div>
+
+<script>
+const questions = [
+  // ── SECTION A: Nomenclature (8) ──────────────────────────────────────────
+  {
+    section:'A', type:'Recall',
+    text:'A benign tumor arising from fibrous connective tissue is correctly termed:',
+    options:['Fibrosarcoma','Fibroma','Adenoma','Lipoma'],
+    correct:1,
+    explanation:'Benign tumours of connective tissue take the cell-of-origin as prefix + "-oma". Fibroma = benign fibrous tissue tumour. Fibrosarcoma is its malignant counterpart. Adenoma arises from glands; Lipoma from adipose tissue.'
+  },
+  {
+    section:'A', type:'Recall',
+    text:'Which suffix correctly identifies a malignant tumour of epithelial origin?',
+    options:['Sarcoma','Lymphoma','-carcinoma','-oma'],
+    correct:2,
+    explanation:'Carcinoma designates malignant tumours of epithelial origin (e.g. squamous cell carcinoma, adenocarcinoma). Sarcoma = malignant mesenchymal tumour. Lymphoma is a malignant lymphoid tumour named as an exception to the "-oma = benign" rule.'
+  },
+  {
+    section:'A', type:'Recall',
+    text:'A malignant tumour arising from adipose tissue is correctly termed:',
+    options:['Lipoma','Adenocarcinoma','Liposarcoma','Fibrosarcoma'],
+    correct:2,
+    explanation:'Liposarcoma is the malignant counterpart of lipoma. The "-sarcoma" suffix signals mesenchymal malignancy; the "lipo-" prefix identifies the cell of origin as adipocytes.'
+  },
+  {
+    section:'A', type:'Recall',
+    text:'Which of the following is a benign epithelial tumour forming glandular structures?',
+    options:['Adenoma','Papilloma','Sarcoma','Melanoma'],
+    correct:0,
+    explanation:'Adenoma = benign glandular epithelial tumour (e.g. colonic adenoma, pituitary adenoma). Papilloma arises from surface epithelium with a finger-like projection. Both melanoma and sarcoma are malignant, despite "-oma" suffix.'
+  },
+  {
+    section:'A', type:'Recall',
+    text:'A papilloma most commonly arises from which tissue type?',
+    options:['Bone','Mesenchymal tissue','Surface epithelium','Cartilage'],
+    correct:2,
+    explanation:'Papillomas arise from surface (covering) epithelium — squamous or transitional — forming exophytic finger-like projections. Examples include squamous cell papilloma of skin and transitional cell papilloma of the bladder.'
+  },
+  {
+    section:'A', type:'Recall',
+    text:'Which of the following tumours is classified as malignant?',
+    options:['Chondroma','Osteoma','Leiomyoma','Osteosarcoma'],
+    correct:3,
+    explanation:'Osteosarcoma is the most common primary malignant bone tumour. Chondroma (cartilage), osteoma (bone), and leiomyoma (smooth muscle) are all benign. Note: "-sarcoma" always indicates malignancy of mesenchymal origin.'
+  },
+  {
+    section:'A', type:'Recall',
+    text:'The suffix "-sarcoma" designates a malignant tumour arising from which tissue type?',
+    options:['Epithelial tissue','Mesenchymal tissue','Neural tissue','Lymphoid tissue'],
+    correct:1,
+    explanation:'Sarcomas are malignant tumours of mesenchymal (connective tissue) origin — including bone, cartilage, fat, smooth and skeletal muscle, and blood vessels. Carcinomas arise from epithelium; lymphomas from lymphoid tissue.'
+  },
+  {
+    section:'A', type:'Critical thinking',
+    text:'A patient is diagnosed with a "melanoma." Despite ending in "-oma," this tumour is malignant. Which of the following is the BEST explanation for this apparent inconsistency?',
+    options:[
+      'Melanoma is a benign tumour that has been misclassified',
+      'Melanoma, lymphoma, and myeloma are historical exceptions where "-oma" does not indicate benign behaviour',
+      'All tumours ending in "-oma" are malignant',
+      'Melanoma only becomes malignant when it spreads to lymph nodes'
+    ],
+    correct:1,
+    explanation:'Melanoma, lymphoma, and myeloma are well-recognised nomenclature exceptions — historically named before standardised tumour nomenclature was established. These are all malignant despite the "-oma" suffix. Medical imaging students must memorise these exceptions to avoid clinical misinterpretation.'
+  },
+
+  // ── SECTION B: Benign vs Malignant (8) ──────────────────────────────────
+  {
+    section:'B', type:'Recall',
+    text:'Which feature is MORE characteristic of a benign tumour compared to a malignant one?',
+    options:['Rapid growth rate','Distant metastasis','Well-differentiated cells resembling normal tissue','Tissue invasion beyond the capsule'],
+    correct:2,
+    explanation:'Benign tumours are typically well-differentiated — their cells closely resemble the tissue of origin in structure and function. Malignant tumours tend to be poorly differentiated (anaplastic), grow rapidly, invade locally, and metastasise.'
+  },
+  {
+    section:'B', type:'Recall',
+    text:'Metastasis is EXCLUSIVELY a feature of:',
+    options:['Hyperplasia','Benign tumours','Dysplasia','Malignant tumours'],
+    correct:3,
+    explanation:'The ability to metastasise — to establish secondary tumour deposits discontinuous from the primary — is the defining feature that distinguishes malignant from benign neoplasms. Benign tumours do not metastasise by definition.'
+  },
+  {
+    section:'B', type:'Recall',
+    text:'Which characteristic is MOST typical of malignant neoplasms?',
+    options:['Fibrous encapsulation','Slow growth rate','Local invasion and infiltration of surrounding tissue','Uniform nuclear size (normochromasia)'],
+    correct:2,
+    explanation:'Local invasion — the ability to infiltrate and destroy surrounding normal tissue — is a hallmark of malignancy. Benign tumours, by contrast, remain localised and are typically enclosed within a fibrous capsule.'
+  },
+  {
+    section:'B', type:'Recall',
+    text:'Anaplasia in a tumour refers to:',
+    options:['Normal cellular maturation maintained','Loss of cellular differentiation and structural organisation','Increased blood vessel formation','Accumulation of lipid within tumour cells'],
+    correct:1,
+    explanation:'Anaplasia (from Greek: "backwards formation") describes loss of differentiation — tumour cells lose structural and functional resemblance to their cell of origin. Features include marked pleomorphism, hyperchromatic nuclei, prominent nucleoli, and abnormal mitoses. It is characteristic of high-grade malignancy.'
+  },
+  {
+    section:'B', type:'Critical thinking',
+    text:'On CT imaging, which feature is MOST suggestive of a malignant lesion rather than a benign one?',
+    options:[
+      'Well-defined smooth margins with a surrounding capsule',
+      'Homogeneous attenuation throughout the lesion',
+      'Irregular, spiculated margins with infiltration of adjacent structures',
+      'Absence of internal vascularity on Doppler'
+    ],
+    correct:2,
+    explanation:'Irregular or spiculated margins with infiltration of adjacent structures reflects the invasive nature of malignancy. Well-defined smooth margins and encapsulation suggest benignity. Medical imaging plays a crucial role in detecting these features for staging and treatment planning.'
+  },
+  {
+    section:'B', type:'Recall',
+    text:'Benign tumours are characterised by which of the following?',
+    options:['Early haematogenous spread','Metastasis to regional lymph nodes','Remaining localised at the site of origin','Marked nuclear pleomorphism'],
+    correct:2,
+    explanation:'Benign tumours remain localised — they grow expansively but do not invade or spread to distant sites. They typically develop a fibrous capsule separating them from host tissue, which is why surgical excision is usually curative.'
+  },
+  {
+    section:'B', type:'Recall',
+    text:'Pleomorphism — variation in cell and nuclear size and shape — is most commonly associated with:',
+    options:['Benign tumours','Malignant tumours','Acute inflammation','Simple hyperplasia'],
+    correct:1,
+    explanation:'Pleomorphism is a key histological hallmark of malignancy. It reflects genomic instability and loss of normal growth control. The greater the pleomorphism, the higher the tumour grade and typically the worse the prognosis.'
+  },
+  {
+    section:'B', type:'Critical thinking',
+    text:'The prognosis of a cancer patient depends on multiple tumour-related factors. Which combination BEST predicts a more favourable outcome?',
+    options:[
+      'Large tumour size, poorly differentiated, distant metastases present',
+      'Small tumour, well-differentiated, no metastases, complete surgical resection',
+      'Moderate size, poorly differentiated, lymphovascular invasion present',
+      'Large tumour, well-differentiated, but with haematogenous spread'
+    ],
+    correct:1,
+    explanation:'Favourable prognosis in neoplasia correlates with: small tumour size, well-differentiated (low-grade) histology, absence of metastasis, complete surgical resection with clear margins, and responsiveness to therapy. Each of these factors is assessed when staging and planning treatment.'
+  },
+
+  // ── SECTION C: Carcinogenesis (6) ────────────────────────────────────────
+  {
+    section:'C', type:'Recall',
+    text:'Which of the following BEST defines carcinogenesis?',
+    options:['The process of tissue repair following injury','The formation and recruitment of inflammatory cells','The multi-step process by which normal cells are transformed into cancer cells','A reversible cellular adaptation to stress'],
+    correct:2,
+    explanation:'Carcinogenesis is the process of cancer formation — normal cells undergo progressive, non-lethal DNA damage leading to genetic alterations that confer growth advantages, ultimately producing a malignant neoplasm. It is a multi-step, irreversible process.'
+  },
+  {
+    section:'C', type:'Recall',
+    text:'Which of the following is correctly classified as a chemical carcinogen?',
+    options:['Ultraviolet radiation','Asbestos','Epstein-Barr virus','Helicobacter pylori'],
+    correct:1,
+    explanation:'Asbestos is a physical/chemical carcinogen associated with lung carcinoma and mesothelioma. UV radiation is a physical (radiation) carcinogen; EBV is a viral carcinogen; H. pylori is a bacterial agent linked to gastric carcinoma — these are different categories of carcinogens.'
+  },
+  {
+    section:'C', type:'Recall',
+    text:'Natural ultraviolet radiation, particularly UVB, is most strongly associated with which malignancy?',
+    options:['Hepatocellular carcinoma','Lung carcinoma','Skin carcinoma (squamous cell, basal cell, melanoma)','Colorectal carcinoma'],
+    correct:2,
+    explanation:'UVB radiation causes DNA damage by forming pyrimidine dimers, leading to mutations in p53 and RAS genes. Skin cancers — squamous cell carcinoma, basal cell carcinoma, and malignant melanoma — are the primary UV-induced malignancies. High incidence is seen in sun-exposed populations (e.g. Australia, New Zealand).'
+  },
+  {
+    section:'C', type:'Recall',
+    text:'Persistent infection with which virus is most strongly implicated in the development of cervical carcinoma?',
+    options:['Epstein-Barr virus (EBV)','Human papillomavirus (HPV)','Hepatitis A virus (HAV)','Cytomegalovirus (CMV)'],
+    correct:1,
+    explanation:'High-risk HPV types (especially 16 and 18) are the primary causal agents of cervical carcinoma and anal carcinoma. HPV-16 is also implicated in oropharyngeal carcinoma. HPV encodes E6 and E7 oncoproteins that inactivate p53 and Rb tumour suppressor proteins respectively.'
+  },
+  {
+    section:'C', type:'Critical thinking',
+    text:'Which category of cancer-associated genes, when mutated, directly removes a "brake" on cell division and allows unregulated cell proliferation?',
+    options:['Proto-oncogenes','Tumour suppressor genes','DNA mismatch repair genes','Ribosomal RNA genes'],
+    correct:1,
+    explanation:'Tumour suppressor genes (e.g. Rb, APC, p53, NF1, WT1) normally inhibit cell cycle progression. Loss-of-function mutations in both alleles remove these brakes, permitting unregulated proliferation. In contrast, proto-oncogenes accelerate growth when mutated (gain-of-function).'
+  },
+  {
+    section:'C', type:'Critical thinking',
+    text:'Cigarette smoking is a major risk factor for lung carcinoma. The carcinogenic chemicals in tobacco smoke primarily act as which type of agent in the multi-step model?',
+    options:[
+      'Non-genotoxic promoters that do not damage DNA',
+      'Genotoxic initiators that cause direct DNA mutations, particularly in polycyclic aromatic hydrocarbons',
+      'Viral oncoproteins that inactivate tumour suppressor genes',
+      'Physical carcinogens that cause mechanical irritation only'
+    ],
+    correct:1,
+    explanation:'Polycyclic aromatic hydrocarbons (PAHs) in cigarette smoke are indirect-acting (procarcinogen) genotoxic initiators requiring metabolic activation by cytochrome P450 enzymes to reactive electrophilic intermediates. These form DNA adducts, causing mutations in RAS and p53 — hallmarks of smoking-related lung carcinoma.'
+  },
+
+  // ── SECTION D: Clinical Vignettes (8) ────────────────────────────────────
+  {
+    section:'D', type:'Clinical vignette',
+    vignette:'A 55-year-old male with a 30 pack-year smoking history presents with haemoptysis and unintentional weight loss. CT thorax reveals an irregular, spiculated mass in the right upper lobe with enlarged ipsilateral hilar lymph nodes.',
+    text:'Which imaging and clinical feature MOST strongly suggests malignancy?',
+    options:[
+      'Smooth, well-defined capsule around the mass',
+      'Bilateral symmetric appearance',
+      'Spiculated borders with regional lymphadenopathy',
+      'Homogeneous attenuation with no internal architecture'
+    ],
+    correct:2,
+    explanation:'Spiculated (irregular, star-shaped) margins reflect tumour cells invading the surrounding lung parenchyma — a hallmark of malignant infiltration. Ipsilateral hilar lymphadenopathy indicates regional (N1) lymphatic spread, raising the TNM stage. This combination strongly suggests primary lung carcinoma.'
+  },
+  {
+    section:'D', type:'Clinical vignette',
+    vignette:'A 42-year-old woman undergoes abdominal ultrasound for right upper quadrant discomfort. Imaging reveals a well-circumscribed, uniformly echogenic, encapsulated liver lesion with no invasion into adjacent hepatic parenchyma.',
+    text:'What is the MOST likely nature of this tumour based on these imaging features?',
+    options:[
+      'Malignant neoplasm with haematogenous spread',
+      'Benign neoplasm — likely hepatic haemangioma or adenoma',
+      'Metastatic deposit from a primary colon carcinoma',
+      'Sarcoma with haemorrhagic necrosis'
+    ],
+    correct:1,
+    explanation:'Well-circumscribed, encapsulated, non-invasive lesions with uniform echotexture strongly favour benignity. Hepatic haemangioma (most common benign liver tumour) presents as a well-defined, hyperechoic lesion on ultrasound. Malignant lesions typically show irregular borders, heterogeneity, and vascular invasion.'
+  },
+  {
+    section:'D', type:'Clinical vignette',
+    vignette:'A 58-year-old woman attends her routine breast screening mammogram. Imaging demonstrates a cluster of pleomorphic microcalcifications with architectural distortion and irregular margins in the upper outer quadrant of the right breast.',
+    text:'Which diagnosis is MOST clinically concerning based on these mammographic findings?',
+    options:[
+      'Fibroadenoma — a benign fibroglandular tumour',
+      'Simple breast cyst with calcified wall',
+      'Breast carcinoma — ductal carcinoma in situ or invasive ductal carcinoma',
+      'Lipoma with fat necrosis'
+    ],
+    correct:2,
+    explanation:'Pleomorphic microcalcifications with architectural distortion are a major radiological red flag for ductal carcinoma in situ (DCIS) or invasive ductal carcinoma. Fibroadenomas typically show smooth, lobulated "popcorn" calcifications. This pattern warrants urgent core biopsy under BI-RADS 4/5 classification.'
+  },
+  {
+    section:'D', type:'Clinical vignette',
+    vignette:'A 16-year-old male presents with progressive pain and swelling around the distal femur. Plain radiograph reveals a sunburst periosteal reaction and Codman\'s triangle. Biopsy shows highly pleomorphic spindle cells with abnormal mitotic figures and osteoid production.',
+    text:'These histological and radiological findings are MOST consistent with:',
+    options:[
+      'Benign bone cyst — simple aneurysmal type',
+      'Osteoma — a benign cortical bone tumour',
+      'Osteosarcoma — primary malignant bone tumour',
+      'Enchondroma — benign cartilaginous intramedullary tumour'
+    ],
+    correct:2,
+    explanation:'Osteosarcoma is the most common primary malignant bone tumour in adolescents, typically affecting the distal femur/proximal tibia metaphysis. The sunburst periosteal reaction and Codman\'s triangle are classic radiological signs of aggressive periosteal elevation. Pleomorphic cells producing osteoid confirm osteosarcoma on histology.'
+  },
+  {
+    section:'D', type:'Clinical vignette',
+    vignette:'A 52-year-old male with 20 years of occupational asbestos exposure in shipbuilding presents with progressive dyspnoea and pleuritic chest pain. CT shows bilateral pleural thickening with a pleural-based soft tissue mass and ipsilateral pleural effusion.',
+    text:'Based on the occupational history and imaging findings, which malignancy is MOST likely?',
+    options:[
+      'Primary lung adenocarcinoma',
+      'Pleural mesothelioma',
+      'Benign pleural lipoma',
+      'Thyroid adenoma with pulmonary extension'
+    ],
+    correct:1,
+    explanation:'Malignant pleural mesothelioma is strongly associated with asbestos exposure, with a latency period of 20–40 years. CT features include unilateral or bilateral pleural thickening, rindlike pleural encasement, and effusion. Asbestos also increases risk of lung carcinoma, but the pleural-based pattern here is characteristic of mesothelioma.'
+  },
+  {
+    section:'D', type:'Clinical vignette',
+    vignette:'MRI of the brain in a 62-year-old man shows a heterogeneous, T1-hypointense, T2-hyperintense mass in the corpus callosum crossing the midline ("butterfly" pattern), with surrounding vasogenic oedema and enhancement on gadolinium.',
+    text:'Which feature MOST indicates malignant behaviour in this lesion?',
+    options:[
+      'Absence of enhancement on gadolinium',
+      'Local tissue invasion across the corpus callosum with blood-brain barrier disruption',
+      'Well-defined smooth margins on T2-weighted imaging',
+      'Slow progression over several years of follow-up'
+    ],
+    correct:1,
+    explanation:'The "butterfly" glioma pattern, gadolinium enhancement (blood-brain barrier disruption), heterogeneity, and infiltration across the corpus callosum are hallmarks of high-grade glioblastoma (WHO grade IV). Invasion across midline structures indicates aggressive, infiltrative malignant behaviour. MRI is the gold standard modality for CNS tumour characterisation.'
+  },
+  {
+    section:'D', type:'Clinical vignette',
+    vignette:'A 28-year-old woman attends a cervical screening clinic and is found to have persistent high-risk HPV infection (HPV-16 positive) on testing. Colposcopy with biopsy reveals cervical intraepithelial neoplasia grade 3 (CIN 3).',
+    text:'If left untreated, persistent high-risk HPV infection with CIN 3 most significantly increases the risk of progressing to:',
+    options:[
+      'Thyroid papillary carcinoma',
+      'Hepatocellular carcinoma',
+      'Invasive cervical carcinoma',
+      'Renal cell carcinoma'
+    ],
+    correct:2,
+    explanation:'CIN 3 (high-grade squamous intraepithelial lesion) represents severe dysplasia/carcinoma in situ driven by HPV oncoproteins E6 (degrades p53) and E7 (inactivates Rb). Without treatment, approximately 30–50% of CIN 3 cases progress to invasive cervical carcinoma over 10–20 years. Early detection via screening is life-saving.'
+  },
+  {
+    section:'D', type:'Clinical vignette',
+    vignette:'A 67-year-old man treated for sigmoid colon carcinoma 14 months ago (T3N1M0, stage III) undergoes surveillance CT scan of the chest, abdomen, and pelvis. Multiple new hepatic lesions are identified: hypoechoic, ring-enhancing nodules of varying sizes distributed throughout both lobes.',
+    text:'These new hepatic lesions MOST likely represent:',
+    options:[
+      'Benign hepatic hyperplasia secondary to chemotherapy',
+      'Dysplastic nodules in background cirrhosis',
+      'Haematogenous metastatic spread from the primary colon carcinoma',
+      'Multiple benign hepatic adenomas from steroid use'
+    ],
+    correct:2,
+    explanation:'The liver is the most common site for colorectal cancer metastases — the portal venous drainage of the colon delivers tumour emboli directly to the liver. Ring-enhancing (peripheral washout) hypoechoic nodules in both lobes on surveillance CT in a patient with a prior colon cancer diagnosis are metastases until proven otherwise. Haematogenous spread and the liver/lung are favoured pathways for colorectal carcinoma.'
+  }
+];
+
+const sectionNames = {A:'Nomenclature',B:'Benign vs Malignant',C:'Carcinogenesis',D:'Clinical Vignettes'};
+const sectionColors = {A:'section-a',B:'section-b',C:'section-c',D:'section-d'};
+
+let answered = {};
+let correctMap = {};
+let currentFilter = 'all';
+
+function buildQuiz() {
+  answered = {}; correctMap = {};
+  const container = document.getElementById('quiz');
+  container.innerHTML = '';
+
+  const sections = ['A','B','C','D'];
+  let qNum = 0;
+
+  sections.forEach(sec => {
+    const secQs = questions.filter(q => q.section === sec);
+
+    const hdr = document.createElement('div');
+    hdr.className = 'section-header';
+    hdr.id = 'sec-hdr-' + sec;
+    hdr.innerHTML = `<span class="section-badge ${sec}">${sec}</span><span class="section-title">Section ${sec} — ${sectionNames[sec]}</span><span class="section-count">${secQs.length} questions</span>`;
+    container.appendChild(hdr);
+
+    secQs.forEach((q, localIdx) => {
+      qNum++;
+      const globalIdx = questions.indexOf(q);
+      const card = document.createElement('div');
+      card.className = 'q-card';
+      card.id = 'qcard-' + globalIdx;
+      card.dataset.section = sec;
+
+      const letters = ['A','B','C','D'];
+      const vigHTML = q.vignette ? `<div class="vignette">${q.vignette}</div>` : '';
+      const optsHTML = q.options.map((opt,j) =>
+        `<button class="opt-btn" onclick="selectAnswer(${globalIdx},${j})" id="opt-${globalIdx}-${j}">
+          <span class="opt-letter">${letters[j]}</span><span>${opt}</span>
+        </button>`
+      ).join('');
+
+      card.innerHTML = `
+        <div class="q-meta">
+          <span class="q-num">Q${String(qNum).padStart(2,'0')}</span>
+          <span class="q-badge ${sec}">Section ${sec}</span>
+          <span class="q-type">${q.type}</span>
+        </div>
+        ${vigHTML}
+        <p class="q-text">${q.text}</p>
+        <div class="options" id="opts-${globalIdx}">${optsHTML}</div>
+        <div class="explanation" id="exp-${globalIdx}"><strong>Explanation:</strong> ${q.explanation}</div>
+      `;
+      container.appendChild(card);
+    });
+  });
+  updateStats();
+}
+
+function selectAnswer(qIdx, optIdx) {
+  if (answered[qIdx] !== undefined) return;
+  const q = questions[qIdx];
+  document.querySelectorAll(`#opts-${qIdx} .opt-btn`).forEach(b => b.disabled = true);
+
+  const chosen = document.getElementById(`opt-${qIdx}-${optIdx}`);
+  const correctBtn = document.getElementById(`opt-${qIdx}-${q.correct}`);
+  const card = document.getElementById('qcard-' + qIdx);
+
+  const isCorrect = optIdx === q.correct;
+  chosen.classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+  if (!isCorrect) correctBtn.classList.add('reveal-correct');
+  card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+  document.getElementById('exp-' + qIdx).classList.add('visible');
+
+  answered[qIdx] = true;
+  correctMap[qIdx] = isCorrect;
+  updateStats();
+
+  const visibleCards = document.querySelectorAll('.q-card:not(.hidden)');
+  const visibleAnswered = Array.from(visibleCards).filter(c => answered[parseInt(c.id.split('-')[1])] !== undefined);
+  if (visibleAnswered.length === visibleCards.length) {
+    setTimeout(showResult, 700);
+  }
+}
+
+function updateStats() {
+  const visibleCards = document.querySelectorAll('.q-card:not(.hidden)');
+  const total = visibleCards.length;
+  const ans = Array.from(visibleCards).filter(c => answered[parseInt(c.id.split('-')[1])] !== undefined).length;
+  const cor = Array.from(visibleCards).filter(c => correctMap[parseInt(c.id.split('-')[1])]).length;
+
+  document.getElementById('answered-count').textContent = ans;
+  document.getElementById('visible-count').textContent = total;
+  document.getElementById('correct-count').textContent = cor;
+  const pct = ans > 0 ? Math.round(cor / ans * 100) : 0;
+  document.getElementById('pct-pill').textContent = ans > 0 ? pct + '%' : '—';
+  document.getElementById('progress-fill').style.width = total > 0 ? (ans / total * 100) + '%' : '0%';
+}
+
+function filterSection(sec, btn) {
+  currentFilter = sec;
+  document.querySelectorAll('.s-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('result-panel').classList.remove('visible');
+
+  questions.forEach((q, i) => {
+    const card = document.getElementById('qcard-' + i);
+    if (card) card.classList.toggle('hidden', sec !== 'all' && q.section !== sec);
+  });
+
+  ['A','B','C','D'].forEach(s => {
+    const hdr = document.getElementById('sec-hdr-' + s);
+    if (hdr) hdr.style.display = (sec === 'all' || sec === s) ? 'flex' : 'none';
+  });
+
+  updateStats();
+}
+
+function showResult() {
+  const visibleCards = document.querySelectorAll('.q-card:not(.hidden)');
+  const total = visibleCards.length;
+  const cor = Array.from(visibleCards).filter(c => correctMap[parseInt(c.id.split('-')[1])]).length;
+  const pct = Math.round(cor / total * 100);
+
+  document.getElementById('result-score').textContent = pct + '%';
+
+  const breakdown = document.getElementById('section-breakdown');
+  breakdown.innerHTML = '';
+  const secs = currentFilter === 'all' ? ['A','B','C','D'] : [currentFilter];
+  secs.forEach(s => {
+    const sqIdxs = questions.map((q,i)=>q.section===s?i:-1).filter(i=>i>=0);
+    const sTotal = sqIdxs.length;
+    const sCor = sqIdxs.filter(i => correctMap[i]).length;
+    const sAns = sqIdxs.filter(i => answered[i] !== undefined).length;
+    if (sAns === 0) return;
+    const card = document.createElement('div');
+    card.className = 'breakdown-card';
+    card.innerHTML = `<div class="bd-label">${sectionNames[s]}</div><div class="bd-score" style="color:var(--section-${s.toLowerCase() === 'a' ? 'a' : s.toLowerCase() === 'b' ? 'b' : s.toLowerCase() === 'c' ? 'c' : 'd'})">${sCor}/${sTotal}</div>`;
+    breakdown.appendChild(card);
+  });
+
+  let msg = '';
+  if (pct >= 85) msg = 'Excellent — you demonstrate a strong command of neoplasia concepts at the BMI level. Continue to revise imaging correlations for grading and staging.';
+  else if (pct >= 70) msg = 'Good performance. Review the questions you missed and focus on differentiating imaging features of benign vs malignant lesions.';
+  else if (pct >= 55) msg = 'Passing threshold reached. Targeted revision of tumour nomenclature, metastatic pathways, and carcinogenesis mechanisms is recommended.';
+  else msg = 'Significant revision required. Return to your lecture slides on nomenclature, benign vs malignant characteristics, and types of carcinogenesis before retaking.';
+
+  document.getElementById('result-message').textContent = `${cor} of ${total} correct. ${msg}`;
+  const panel = document.getElementById('result-panel');
+  panel.classList.add('visible');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function resetQuiz() {
+  document.getElementById('result-panel').classList.remove('visible');
+  buildQuiz();
+  const activeTab = document.querySelector('.s-tab.active');
+  if (activeTab && currentFilter !== 'all') {
+    filterSection(currentFilter, activeTab);
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+buildQuiz();
+</script>
+</body>
+</html>
