@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Pathology: Immunity & Neoplasia Quiz</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #16a085;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --correct-color: #27ae60;
+            --incorrect-color: #c0392b;
+            --hint-color: #2980b9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-top: 40px;
+            font-size: 1.2rem;
+        }
+
+        .question-card {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .option-item {
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-item:hover {
+            background-color: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .option-item input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: var(--hint-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0;
+            margin-top: 10px;
+            display: block;
+            text-decoration: underline;
+        }
+
+        .hint-text {
+            display: none;
+            font-style: italic;
+            color: #555;
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-left: 4px solid var(--hint-color);
+            border-radius: 4px;
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .correct-bg {
+            background-color: #d4edda !important;
+            border-color: var(--correct-color) !important;
+            color: #155724;
+        }
+
+        .incorrect-bg {
+            background-color: #f8d7da !important;
+            border-color: var(--incorrect-color) !important;
+            color: #721c24;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: background 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #117a65;
+        }
+
+        #result-container {
+            display: none;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #e2e8f0;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>Pathology Assessment: Immunity & Neoplasia</h1>
+    
+    <form id="quiz-form">
+        <!-- SECTION 1 -->
+        <div class="section-title">Part 1: Diseases of Immunity (Lecture Notes 1)</div>
+        
+        <div class="question-card" data-q="1">
+            <div class="question-text">1. Which of the following is considered a primary component of innate immunity?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q1" value="A"> Skin and mucous membranes</label></li>
+                <li class="option-item"><label><input type="radio" name="q1" value="B"> Memory T lymphocytes</label></li>
+                <li class="option-item"><label><input type="radio" name="q1" value="C"> Plasma cells</label></li>
+                <li class="option-item"><label><input type="radio" name="q1" value="D"> Antigen-specific antibodies</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(1)">Show Hint</button>
+            <div class="hint-text" id="hint-1">Think about the body's non-specific, immediate first line of defense that is always present.</div>
+            <div class="explanation" id="exp-1"></div>
+        </div>
+
+        <div class="question-card" data-q="2">
+            <div class="question-text">2. What is the primary benefit of memory cells in adaptive immunity?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q2" value="A"> They provide general protection against any incoming virus.</label></li>
+                <li class="option-item"><label><input type="radio" name="q2" value="B"> They trigger immediate mechanical reflexes like coughing.</label></li>
+                <li class="option-item"><label><input type="radio" name="q2" value="C"> They enable a rapid, highly efficient response upon re-infection.</label></li>
+                <li class="option-item"><label><input type="radio" name="q2" value="D"> They non-specifically phagocytose foreign bacteria.</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(2)">Show Hint</button>
+            <div class="hint-text" id="hint-2">Consider how your body responds much faster the second time it encounters a specific illness.</div>
+            <div class="explanation" id="exp-2"></div>
+        </div>
+
+        <div class="question-card" data-q="3">
+            <div class="question-text">3. Which class of antibody is uniquely capable of crossing the placenta to provide passive immunity to a fetus?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q3" value="A"> IgM</label></li>
+                <li class="option-item"><label><input type="radio" name="q3" value="B"> IgG</label></li>
+                <li class="option-item"><label><input type="radio" name="q3" value="C"> IgA</label></li>
+                <li class="option-item"><label><input type="radio" name="q3" value="D"> IgE</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(3)">Show Hint</button>
+            <div class="hint-text" id="hint-3">Look for the most abundant class of circulating immunoglobulins.</div>
+            <div class="explanation" id="exp-3"></div>
+        </div>
+
+        <div class="question-card" data-q="4">
+            <div class="question-text">4. Which cell type represents 60% to 70% of peripheral lymphocytes and expresses a specific rearranged T-cell receptor (TCR)?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q4" value="A"> B Lymphocytes</label></li>
+                <li class="option-item"><label><input type="radio" name="q4" value="B"> Natural Killer (NK) cells</label></li>
+                <li class="option-item"><label><input type="radio" name="q4" value="C"> T Lymphocytes</label></li>
+                <li class="option-item"><label><input type="radio" name="q4" value="D"> Macrophages</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(4)">Show Hint</button>
+            <div class="hint-text" id="hint-4">Identify the primary cells responsible for cell-mediated immunity that mature in the thymus.</div>
+            <div class="explanation" id="exp-4"></div>
+        </div>
+
+        <div class="question-card" data-q="5">
+            <div class="question-text">5. Which antibody class is the very first to be produced by B cells during a primary immune response?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q5" value="A"> IgM</label></li>
+                <li class="option-item"><label><input type="radio" name="q5" value="B"> IgG</label></li>
+                <li class="option-item"><label><input type="radio" name="q5" value="C"> IgD</label></li>
+                <li class="option-item"><label><input type="radio" name="q5" value="D"> IgE</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(5)">Show Hint</button>
+            <div class="hint-text" id="hint-5">This heavy pentameric immunoglobulin is the default first responder.</div>
+            <div class="explanation" id="exp-5"></div>
+        </div>
+
+        <div class="question-card" data-q="6">
+            <div class="question-text">6. What is the defining characteristic of a hapten (incomplete antigen)?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q6" value="A"> It can activate T cells independently without any processing.</label></li>
+                <li class="option-item"><label><input type="radio" name="q6" value="B"> It possesses reactivity but lacks immunogenicity on its own.</label></li>
+                <li class="option-item"><label><input type="radio" name="q6" value="C"> It is always composed of a large, complex protein structure.</label></li>
+                <li class="option-item"><label><input type="radio" name="q6" value="D"> It stimulates robust antibody production immediately upon entry.</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(6)">Show Hint</button>
+            <div class="hint-text" id="hint-6">Think about a small molecule that can bind to antibodies but requires a carrier protein to trigger an active response.</div>
+            <div class="explanation" id="exp-6"></div>
+        </div>
+
+        <div class="question-card" data-q="7">
+            <div class="question-text">7. Which antibody class is predominantly found in external secretions such as tears, saliva, and mucus?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q7" value="A"> IgA</label></li>
+                <li class="option-item"><label><input type="radio" name="q7" value="B"> IgG</label></li>
+                <li class="option-item"><label><input type="radio" name="q7" value="C"> IgD</label></li>
+                <li class="option-item"><label><input type="radio" name="q7" value="D"> IgM</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(7)">Show Hint</button>
+            <div class="hint-text" id="hint-7">This antibody provides localized mucosal immunity.</div>
+            <div class="explanation" id="exp-7"></div>
+        </div>
+
+        <div class="question-card" data-q="8">
+            <div class="question-text">8. Which of the following organs are classified as primary lymphoid organs?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q8" value="A"> Spleen and lymph nodes</label></li>
+                <li class="option-item"><label><input type="radio" name="q8" value="B"> Bone marrow and thymus</label></li>
+                <li class="option-item"><label><input type="radio" name="q8" value="C"> Tonsils and Peyer's patches</label></li>
+                <li class="option-item"><label><input type="radio" name="q8" value="D"> Appendix and liver</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(8)">Show Hint</button>
+            <div class="hint-text" id="hint-8">Focus on where immune cells are originally generated and matured before entering combat.</div>
+            <div class="explanation" id="exp-8"></div>
+        </div>
+
+        <div class="question-card" data-q="9">
+            <div class="question-text">9. Which antibody class binds selectively to mast cells and basophils, triggering allergic responses?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q9" value="A"> IgG</label></li>
+                <li class="option-item"><label><input type="radio" name="q9" value="B"> IgA</label></li>
+                <li class="option-item"><label><input type="radio" name="q9" value="C"> IgE</label></li>
+                <li class="option-item"><label><input type="radio" name="q9" value="D"> IgM</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(9)">Show Hint</button>
+            <div class="hint-text" id="hint-9">This immunoglobulin is found in trace amounts and is elevated in patients with allergies or asthma.</div>
+            <div class="explanation" id="exp-9"></div>
+        </div>
+
+        <div class="question-card" data-q="10">
+            <div class="question-text">10. What term is used to describe an increased or inappropriate immune response that causes tissue damage?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q10" value="A"> Immunodeficiency</label></li>
+                <li class="option-item"><label><input type="radio" name="q10" value="B"> Self-tolerance</label></li>
+                <li class="option-item"><label><input type="radio" name="q10" value="C"> Hypersensitivity</label></li>
+                <li class="option-item"><label><input type="radio" name="q10" value="D"> Opsonization</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(10)">Show Hint</button>
+            <div class="hint-text" id="hint-10">This word combines a prefix meaning 'excessive' with a root related to environmental awareness.</div>
+            <div class="explanation" id="exp-10"></div>
+        </div>
+
+        <!-- SECTION 2 -->
+        <div class="section-title">Part 2: Carcinogenesis (carcinogenesis - MI.pdf)</div>
+        
+        <div class="question-card" data-q="11">
+            <div class="question-text">11. What term defines the multi-step process by which normal cells undergo genetic transformation into cancer cells?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q11" value="A"> Metaplasia</label></li>
+                <li class="option-item"><label><input type="radio" name="q11" value="B"> Carcinogenesis</label></li>
+                <li class="option-item"><label><input type="radio" name="q11" value="C"> Apoptosis</label></li>
+                <li class="option-item"><label><input type="radio" name="q11" value="D"> Homeostasis</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(11)">Show Hint</button>
+            <div class="hint-text" id="hint-11">This word literally translates to the 'origin or creation of cancer'.</div>
+            <div class="explanation" id="exp-11"></div>
+        </div>
+
+        <div class="question-card" data-q="12">
+            <div class="question-text">12. The tendency over time for malignant tumors to become increasingly aggressive and less responsive to therapy is called:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q12" value="A"> Tumor progression</label></li>
+                <li class="option-item"><label><input type="radio" name="q12" value="B"> Clonal stabilizing</label></li>
+                <li class="option-item"><label><input type="radio" name="q12" value="C"> Contact inhibition</label></li>
+                <li class="option-item"><label><input type="radio" name="q12" value="D"> Innate resolution</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(12)">Show Hint</button>
+            <div class="hint-text" id="hint-12">Think of a word that indicates steady advancement or forward movement.</div>
+            <div class="explanation" id="exp-12"></div>
+        </div>
+
+        <div class="question-card" data-q="13">
+            <div class="question-text">13. Which of the following is an example of a normal cellular gene that promotes growth but can become an oncogene when mutated?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q13" value="A"> Rb gene</label></li>
+                <li class="option-item"><label><input type="radio" name="q13" value="B"> APC gene</label></li>
+                <li class="option-item"><label><input type="radio" name="q13" value="C"> RAS</label></li>
+                <li class="option-item"><label><input type="radio" name="q13" value="D"> WT1 gene</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(13)">Show Hint</button>
+            <div class="hint-text" id="hint-13">This highly common mutated oncogene family acts as a molecular switch in growth factor signaling loops.</div>
+            <div class="explanation" id="exp-13"></div>
+        </div>
+
+        <div class="question-card" data-q="14">
+            <div class="question-text">14. What is the primary action of a functional tumor suppressor gene within a cell?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q14" value="A"> To speed up autonomous growth pathways.</label></li>
+                <li class="option-item"><label><input type="radio" name="q14" value="B"> To regulate cell division checkpoints and prevent tumor development.</label></li>
+                <li class="option-item"><label><input type="radio" name="q14" value="C"> To induce continuous DNA damage.</label></li>
+                <li class="option-item"><label><input type="radio" name="q14" value="D"> To synthesize structural viral proteins.</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(14)">Show Hint</button>
+            <div class="hint-text" id="hint-14">Think of these genes as the protective 'brakes' of the cell cycle.</div>
+            <div class="explanation" id="exp-14"></div>
+        </div>
+
+        <div class="question-card" data-q="15">
+            <div class="question-text">15. How does a mutation leading to overexpression of the BCL2 gene cause tumor formation?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q15" value="A"> By completely neutralizing chemical carcinogens.</label></li>
+                <li class="option-item"><label><input type="radio" name="q15" value="B"> By preventing apoptosis, allowing damaged cells to survive.</label></li>
+                <li class="option-item"><label><input type="radio" name="q15" value="C"> By directly accelerating physical tissue abrasion.</label></li>
+                <li class="option-item"><label><input type="radio" name="q15" value="D"> By accelerating the repair of pyrimidine dimers.</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(15)">Show Hint</button>
+            <div class="hint-text" id="hint-15">Consider the role of BCL2 as a protective shield against programmed cell suicide.</div>
+            <div class="explanation" id="exp-15"></div>
+        </div>
+
+        <div class="question-card" data-q="16">
+            <div class="question-text">16. Xeroderma Pigmentosum is an inherited skin cancer predisposition caused by a failure in which system?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q16" value="A"> Nucleotide excision repair</label></li>
+                <li class="option-item"><label><input type="radio" name="q16" value="B"> Humoral antibody response</label></li>
+                <li class="option-item"><label><input type="radio" name="q16" value="C"> Mesenchymal differentiation</label></li>
+                <li class="option-item"><label><input type="radio" name="q16" value="D"> Apoptotic caspase cascades</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(16)">Show Hint</button>
+            <div class="hint-text" id="hint-16">This repair system is responsible for removing bulky distortions in DNA, such as those caused by UV light.</div>
+            <div class="explanation" id="exp-16"></div>
+        </div>
+
+        <div class="question-card" data-q="17">
+            <div class="question-text">17. Which of the following viruses is strongly linked to nasopharyngeal carcinoma and Burkitt's lymphoma?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q17" value="A"> Hepatitis B Virus (HBV)</label></li>
+                <li class="option-item"><label><input type="radio" name="q17" value="B"> Human Papillomavirus (HPV)</label></li>
+                <li class="option-item"><label><input type="radio" name="q17" value="C"> Epstein-Barr Virus (EBV)</label></li>
+                <li class="option-item"><label><input type="radio" name="q17" value="D"> Herpes type 8 (HHV-8)</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(17)">Show Hint</button>
+            <div class="hint-text" id="hint-17">This widespread virus causes infectious mononucleosis ('mono') and can lead to specific B-cell and epithelial malignancies.</div>
+            <div class="explanation" id="exp-17"></div>
+        </div>
+
+        <div class="question-card" data-q="18">
+            <div class="question-text">18. Which parasitic infection is directly implicated in the development of urinary bladder carcinoma?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q18" value="A"> Clonorchis sinensis</label></li>
+                <li class="option-item"><label><input type="radio" name="q18" value="B"> Schistosomiasis</label></li>
+                <li class="option-item"><label><input type="radio" name="q18" value="C"> Plasmodium falciparum</label></li>
+                <li class="option-item"><label><input type="radio" name="q18" value="D"> Entamoeba histolytica</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(18)">Show Hint</button>
+            <div class="hint-text" id="hint-18">This disease is caused by a blood fluke that releases eggs into the urinary tract, causing chronic inflammation.</div>
+            <div class="explanation" id="exp-18"></div>
+        </div>
+
+        <div class="question-card" data-q="19">
+            <div class="question-text">19. Clonorchis sinensis (the Chinese liver fluke) is a well-known biological parasite that causes cancer in the:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q19" value="A"> Bile ducts</label></li>
+                <li class="option-item"><label><input type="radio" name="q19" value="B"> Bone marrow</label></li>
+                <li class="option-item"><label><input type="radio" name="q19" value="C"> Skin epithelium</label></li>
+                <li class="option-item"><label><input type="radio" name="q19" value="D"> Uterine cervix</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(19)">Show Hint</button>
+            <div class="hint-text" id="hint-19">Think about the drainage system of the liver where bile flows.</div>
+            <div class="explanation" id="exp-19"></div>
+        </div>
+
+        <div class="question-card" data-q="20">
+            <div class="question-text">20. Chronic mechanical irritation from poorly fitting dental prosthetics can lead to which condition?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q20" value="A"> Oral squamous cell carcinoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q20" value="B"> Burkitt's lymphoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q20" value="C"> Hepatocellular carcinoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q20" value="D"> Follicular lymphoma</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(20)">Show Hint</button>
+            <div class="hint-text" id="hint-20">Consider the type of cell that lines the inside of the mouth and faces constant physical friction.</div>
+            <div class="explanation" id="exp-20"></div>
+        </div>
+
+        <!-- SECTION 3 -->
+        <div class="section-title">Part 3: Diseases of Immunity DMI (Diseases_of_Immunity_DMI.pdf)</div>
+        
+        <div class="question-card" data-q="21">
+            <div class="question-text">21. Which of the following classic clinical features is highly characteristic of Systemic Lupus Erythematosus (SLE)?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q21" value="A"> Claw-like hands</label></li>
+                <li class="option-item"><label><input type="radio" name="q21" value="B"> Malar 'butterfly' rash</label></li>
+                <li class="option-item"><label><input type="radio" name="q21" value="C"> Swan-neck finger deformities</label></li>
+                <li class="option-item"><label><input type="radio" name="q21" value="D"> Barium swallow immotility</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(21)">Show Hint</button>
+            <div class="hint-text" id="hint-21">This rash is named after a winged insect and appears symmetrically across the face.</div>
+            <div class="explanation" id="exp-21"></div>
+        </div>
+
+        <div class="question-card" data-q="22">
+            <div class="question-text">22. Which imaging modality is preferred for evaluating Interstitial Lung Disease (ILD) in a patient with Scleroderma?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q22" value="A"> Barium swallow</label></li>
+                <li class="option-item"><label><input type="radio" name="q22" value="B"> High-Resolution Computed Tomography (HRCT)</label></li>
+                <li class="option-item"><label><input type="radio" name="q22" value="C"> Abdominal Ultrasound</label></li>
+                <li class="option-item"><label><input type="radio" name="q22" value="D"> Standard Joint X-ray</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(22)">Show Hint</button>
+            <div class="hint-text" id="hint-22">Look for a high-detail CT scanning technique optimized for lung tissue.</div>
+            <div class="explanation" id="exp-22"></div>
+        </div>
+
+        <div class="question-card" data-q="23">
+            <div class="question-text">23. What radiological feature is typically observed on a plain X-ray of a joint affected by Rheumatoid Arthritis?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q23" value="A"> Diffuse osteosclerosis</label></li>
+                <li class="option-item"><label><input type="radio" name="q23" value="B"> Joint space narrowing and bone erosions</label></li>
+                <li class="option-item"><label><input type="radio" name="q23" value="C"> Intact joint spaces with new bone formations</label></li>
+                <li class="option-item"><label><input type="radio" name="q23" value="D"> Esophageal dilation on chest films</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(23)">Show Hint</button>
+            <div class="hint-text" id="hint-23">Think about the visual signs of chronic inflammatory destruction of joint cartilage and bone borders.</div>
+            <div class="explanation" id="exp-23"></div>
+        </div>
+
+        <div class="question-card" data-q="24">
+            <div class="question-text">24. A barium swallow test in an advanced Scleroderma patient typically reveals:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q24" value="A"> Hyperactive esophageal peristalsis</label></li>
+                <li class="option-item"><label><input type="radio" name="q24" value="B"> Esophageal dysmotility and dilation</label></li>
+                <li class="option-item"><label><input type="radio" name="q24" value="C"> Normal transit with no structural modifications</label></li>
+                <li class="option-item"><label><input type="radio" name="q24" value="D"> Rapid gastric emptying rates</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(24)">Show Hint</button>
+            <div class="hint-text" id="hint-24">Fibrosis replaces muscle in the gut wall, leading to a loss of muscular contraction and structural widening.</div>
+            <div class="explanation" id="exp-24"></div>
+        </div>
+
+        <div class="question-card" data-q="25">
+            <div class="question-text">25. Type I hypersensitivity reactions are primarily mediated by which mechanism?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q25" value="A"> T cell-mediated delayed responses</label></li>
+                <li class="option-item"><label><input type="radio" name="q25" value="B"> Immune complex deposition in vessels</label></li>
+                <li class="option-item"><label><input type="radio" name="q25" value="C"> IgE antibodies binding to mast cells</label></li>
+                <li class="option-item"><label><input type="radio" name="q25" value="D"> IgG cytotoxic cell destruction</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(25)">Show Hint</button>
+            <div class="hint-text" id="hint-25">This type of hypersensitivity includes classic immediate allergic reactions and anaphylaxis.</div>
+            <div class="explanation" id="exp-25"></div>
+        </div>
+
+        <div class="question-card" data-q="26">
+            <div class="question-text">26. Which type of hypersensitivity involves the deposition of antigen-antibody complexes in tissues, causing inflammation?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q26" value="A"> Type I</label></li>
+                <li class="option-item"><label><input type="radio" name="q26" value="B"> Type II</label></li>
+                <li class="option-item"><label><input type="radio" name="q26" value="C"> Type III</label></li>
+                <li class="option-item"><label><input type="radio" name="q26" value="D"> Type IV</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(26)">Show Hint</button>
+            <div class="hint-text" id="hint-26">This type is responsible for serum sickness and the tissue damage seen in systemic lupus.</div>
+            <div class="explanation" id="exp-26"></div>
+        </div>
+
+        <div class="question-card" data-q="27">
+            <div class="question-text">27. Scleroderma (Systemic Sclerosis) is a chronic autoimmune disease characterized by:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q27" value="A"> Widespread fibrosis of skin and internal organs</label></li>
+                <li class="option-item"><label><input type="radio" name="q27" value="B"> Rapid degradation of skin pigments only</label></li>
+                <li class="option-item"><label><input type="radio" name="q27" value="C"> Acute destruction of bone marrow cells</label></li>
+                <li class="option-item"><label><input type="radio" name="q27" value="D"> Transient muscle weakness without tissue alteration</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(27)">Show Hint</button>
+            <div class="hint-text" id="hint-27">The name of this disease literally translates to 'hard skin'.</div>
+            <div class="explanation" id="exp-27"></div>
+        </div>
+
+        <div class="question-card" data-q="28">
+            <div class="question-text">28. Symmetrical joint involvement and prolonged morning stiffness are classic clinical signs of:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q28" value="A"> Isolated Osteoarthritis</label></li>
+                <li class="option-item"><label><input type="radio" name="q28" value="B"> Rheumatoid Arthritis</label></li>
+                <li class="option-item"><label><input type="radio" name="q28" value="C"> Primary Scleroderma</label></li>
+                <li class="option-item"><label><input type="radio" name="q28" value="D"> Acute Anaphylaxis</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(28)">Show Hint</button>
+            <div class="hint-text" id="hint-28">This chronic autoimmune disease primarily targets the synovial lining of joints.</div>
+            <div class="explanation" id="exp-28"></div>
+        </div>
+
+        <div class="question-card" data-q="29">
+            <div class="question-text">29. Swan-neck deformity and ulnar deviation of the fingers are late-stage structural signs of:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q29" value="A"> Rheumatoid Arthritis</label></li>
+                <li class="option-item"><label><input type="radio" name="q29" value="B"> Systemic Lupus Erythematosus</label></li>
+                <li class="option-item"><label><input type="radio" name="q29" value="C"> Early Stage Atheroma</label></li>
+                <li class="option-item"><label><input type="radio" name="q29" value="D"> Primary Immunodeficiency</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(29)">Show Hint</button>
+            <div class="hint-text" id="hint-29">These classic hand deformities are key signs of advanced joint damage in a chronic inflammatory arthritis.</div>
+            <div class="explanation" id="exp-29"></div>
+        </div>
+
+        <div class="question-card" data-q="30">
+            <div class="question-text">30. The presence of Antinuclear Antibodies (ANA) is a key laboratory finding used to screen for:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q30" value="A"> Type I Anaphylaxis</label></li>
+                <li class="option-item"><label><input type="radio" name="q30" value="B"> Systemic Lupus Erythematosus (SLE)</label></li>
+                <li class="option-item"><label><input type="radio" name="q30" value="C"> Isolated Skin Melanoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q30" value="D"> Parasitic Schistosomiasis</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(30)">Show Hint</button>
+            <div class="hint-text" id="hint-30">This autoantibody targets components within the cell's nucleus and is a hallmark screening test for lupus.</div>
+            <div class="explanation" id="exp-30"></div>
+        </div>
+
+        <!-- SECTION 4 -->
+        <div class="section-title">Part 4: Neoplasia (Neoplasia BMI.pdf)</div>
+        
+        <div class="question-card" data-q="31">
+            <div class="question-text">31. Who provided the classic definition of neoplasia as an abnormal mass of tissue whose growth exceeds and is uncoordinated with that of normal tissues?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q31" value="A"> Dr. Sudha Arumugam</label></li>
+                <li class="option-item"><label><input type="radio" name="q31" value="B"> Rupert Willis</label></li>
+                <li class="option-item"><label><input type="radio" name="q31" value="C"> Robbins and Cotran</label></li>
+                <li class="option-item"><label><input type="radio" name="q31" value="D"> Willis Rupert Brandon</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(31)">Show Hint</button>
+            <div class="hint-text" id="hint-31">This influential pathologist's name features the surname 'Willis'.</div>
+            <div class="explanation" id="exp-31"></div>
+        </div>
+
+        <div class="question-card" data-q="32">
+            <div class="question-text">32. What does the medical term 'oncology' mean?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q32" value="A"> The study of infectious bacteria.</label></li>
+                <li class="option-item"><label><input type="radio" name="q32" value="B"> The study of tumors or neoplasms.</label></li>
+                <li class="option-item"><label><input type="radio" name="q32" value="C"> The study of immune defense cells.</label></li>
+                <li class="option-item"><label><input type="radio" name="q32" value="D"> The study of joint narrowing changes.</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(32)">Show Hint</button>
+            <div class="hint-text" id="hint-32">This medical specialty focuses on the diagnosis and treatment of cancer.</div>
+            <div class="explanation" id="exp-32"></div>
+        </div>
+
+        <div class="question-card" data-q="33">
+            <div class="question-text">33. A fully reversible change where one adult cell type is replaced by another adult cell type in response to chronic irritation is called:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q33" value="A"> Anaplasia</label></li>
+                <li class="option-item"><label><input type="radio" name="q33" value="B"> Metaplasia</label></li>
+                <li class="option-item"><label><input type="radio" name="q33" value="C"> Hypoplasia</label></li>
+                <li class="option-item"><label><input type="radio" name="q33" value="D"> Neoplasia</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(33)">Show Hint</button>
+            <div class="hint-text" id="hint-33">An example of this adaptive process is when columnar respiratory cells change into squamous cells due to cigarette smoke.</div>
+            <div class="explanation" id="exp-33"></div>
+        </div>
+
+        <div class="question-card" data-q="34">
+            <div class="question-text">34. Which of the following biological features definitively distinguishes a malignant tumor from a benign tumor?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q34" value="A"> Presence of a visible connective stroma</label></li>
+                <li class="option-item"><label><input type="radio" name="q34" value="B"> The total volume of the mass</label></li>
+                <li class="option-item"><label><input type="radio" name="q34" value="C"> Local invasion and distant metastasis</label></li>
+                <li class="option-item"><label><input type="radio" name="q34" value="D"> Slow growth over several decades</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(34)">Show Hint</button>
+            <div class="hint-text" id="hint-34">Consider the ability of a tumor to breach borders and spread to distant organs.</div>
+            <div class="explanation" id="exp-34"></div>
+        </div>
+
+        <div class="question-card" data-q="35">
+            <div class="question-text">35. A benign tumor that arises from or forms glandular tissue structures is called a/an:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q35" value="A"> Sarcoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q35" value="B"> Carcinoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q35" value="C"> Adenoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q35" value="D"> Papilloma</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(35)">Show Hint</button>
+            <div class="hint-text" id="hint-35">This term combines the Greek prefix for 'gland' with the suffix for a benign tumor.</div>
+            <div class="explanation" id="exp-35"></div>
+        </div>
+
+        <div class="question-card" data-q="36">
+            <div class="question-text">36. What is the correct term for a malignant tumor that originates from mesenchymal (connective) tissues?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q36" value="A"> Adenocarcinoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q36" value="B"> Sarcoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q36" value="C"> Lipoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q36" value="D"> Papilloma</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(36)">Show Hint</button>
+            <div class="hint-text" id="hint-36">Examples of this type of cancer include osteosarcoma and leiomyosarcoma.</div>
+            <div class="explanation" id="exp-36"></div>
+        </div>
+
+        <div class="question-card" data-q="37">
+            <div class="question-text">37. Which of the following is an important exception to standard nomenclature rules, representing a highly malignant tumor despite its '-oma' suffix?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q37" value="A"> Fibroma</label></li>
+                <li class="option-item"><label><input type="radio" name="q37" value="B"> Melanoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q37" value="C"> Osteoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q37" value="D"> Chondroma</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(37)">Show Hint</button>
+            <div class="hint-text" id="hint-37">This aggressive skin cancer originates from pigment cells.</div>
+            <div class="explanation" id="exp-37"></div>
+        </div>
+
+        <div class="question-card" data-q="38">
+            <div class="question-text">38. A disorganized mass composed of mature cells or tissues native to that specific organ site is called a:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q38" value="A"> Choristoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q38" value="B"> Hamartoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q38" value="C"> Adenocarcinoma</label></li>
+                <li class="option-item"><label><input type="radio" name="q38" value="D"> Metaplasia</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(38)">Show Hint</button>
+            <div class="hint-text" id="hint-38">An example is a benign, disorganized nodule in the lung containing cartilage, respiratory epithelium, and fat.</div>
+            <div class="explanation" id="exp-38"></div>
+        </div>
+
+        <div class="question-card" data-q="39">
+            <div class="question-text">39. Which pathway of metastatic spread is most commonly favored by tumors of epithelial origin (carcinomas)?</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q39" value="A"> Hematogenous spread</label></li>
+                <li class="option-item"><label><input type="radio" name="q39" value="B"> Lymphatic spread</label></li>
+                <li class="option-item"><label><input type="radio" name="q39" value="C"> Direct seeding within body cavities</label></li>
+                <li class="option-item"><label><input type="radio" name="q39" value="D"> Intra-articular injection</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(39)">Show Hint</button>
+            <div class="hint-text" id="hint-39">Think about the drainage system that leads directly to regional lymph nodes.</div>
+            <div class="explanation" id="exp-39"></div>
+        </div>
+
+        <div class="question-card" data-q="40">
+            <div class="question-text">40. A carcinoma in situ is defined as a malignant epithelial tumor that:</div>
+            <ul class="options-list">
+                <li class="option-item"><label><input type="radio" name="q40" value="A"> Has invaded deep into the underlying dermis layer.</label></li>
+                <li class="option-item"><label><input type="radio" name="q40" value="B"> Has not breached the basement membrane.</label></li>
+                <li class="option-item"><label><input type="radio" name="q40" value="C"> Spreads rapidly through blood vessels.</label></li>
+                <li class="option-item"><label><input type="radio" name="q40" value="D"> Consists entirely of normal, healthy cells.</label></li>
+            </ul>
+            <button type="button" class="hint-btn" onclick="toggleHint(40)">Show Hint</button>
+            <div class="hint-text" id="hint-40">The phrase 'in situ' means 'in its original place,' indicating that the tumor has not yet breached underlying boundaries.</div>
+            <div class="explanation" id="exp-40"></div>
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Quiz & View Grade</button>
+    </form>
+
+    <div id="result-container"></div>
+</div>
+
+<script>
+    const answers = {
+        q1: "A", q2: "C", q3: "B", q4: "C", q5: "A", q6: "B", q7: "A", q8: "B", q9: "C", q10: "C",
+        q11: "B", q12: "A", q13: "C", q14: "B", q15: "B", q16: "A", q17: "C", q18: "B", q19: "A", q20: "A",
+        q21: "B", q22: "B", q23: "B", q24: "B", q25: "C", q26: "C", q27: "A", q28: "B", q29: "A", q30: "B",
+        q31: "B", q32: "B", q33: "B", q34: "C", q35: "C", q36: "B", q37: "B", q38: "B", q39: "B", q40: "B"
+    };
+
+    const rationales = {
+        q1: "Physical barriers like the skin and mucous membranes provide an immediate, non-specific first line of defense that does not require prior induction.",
+        q2: "Immunological memory ensures that subsequent exposures to the same antigen elicit a swift, symptom-free response via cloned memory cells.",
+        q3: "IgG is the most abundant monomeric antibody class in circulation and is selectively transported across the placental barrier to protect the fetus.",
+        q4: "T cells make up 60-70% of peripheral lymphocytes, carry unique TCR arrays, and mature directly in the thymus.",
+        q5: "IgM is secreted as a large pentamer and acts as the immediate default antibody class generated during a primary adaptive immune encounter.",
+        q6: "A hapten binds specifically to antibodies (reactivity) but is structurally too simple to trigger an immune cascade (immunogenicity) unless attached to a larger carrier molecule.",
+        q7: "IgA routinely acts as a dimeric shield protective inside body secretions such as tears, saliva, breast milk, and gastrointestinal mucus.",
+        q8: "Primary lymphoid organs are structural nurseries where lymphocytes are generated or mature (Bone marrow and Thymus).",
+        q9: "IgE binds with extremely high affinity to Fc receptors on the surfaces of mast cells, causing the release of active histamine during allergic hypersensitivity.",
+        q10: "Hypersensitivity represents an exaggerated or misdirected immune response that causes harm to structural host tissues.",
+        q11: "Carcinogenesis is the specific multi-step path of neoplastic transformation driven primarily by progressive, non-lethal structural DNA mutations.",
+        q12: "Tumor progression reflects the ongoing accumulation of mutations combined with intra-tumoral Darwinian selection inside growing cellular populations over time.",
+        q13: "RAS is a proto-oncogene that assists regular cell cycle pathways; mutated states keep signaling pathways 'on' autonomously to foster tumor proliferation.",
+        q14: "Tumor suppressor genes (like Rb, p53, or APC) function strictly as metabolic safety mechanisms that monitor cell cycle updates to catch errors or check aberrant cell divisions.",
+        q15: "BCL2 functions as an anti-apoptotic pathway anchor; abnormal overexpression flags flawed cells to bypass death loops and survive.",
+        q16: "Patients with Xeroderma Pigmentosum show defective nucleotide excision repair loops, rendering them completely incapable of fixing UV-induced pyrimidine mutations.",
+        q17: "Epstein-Barr Virus (EBV) targets structural lines specifically associated with oncogenic conversion into Burkitt's Lymphoma and Nasopharyngeal variants.",
+        q18: "Chronic bladder infection alongside Schistosoma haematobium eggs induces long-term severe mechanical wall inflammation, driving squamous cell bladder carcinoma transformations.",
+        q19: "Clonorchis sinensis flukes reside inside host biliary pathways, inciting chronic irritations that promote high-risk cholangiocarcinoma conversions.",
+        q20: "Prolonged friction variations alter cell environments via inflammatory mutations, escalating cell lines into oral squamous cell carcinoma variations.",
+        q21: "A prominent malar skin layout spreading symmetrically across both cheeks and the bridge of the nose represents a key ACR clinical parameter for diagnosing SLE.",
+        q22: "High-Resolution Computed Tomography (HRCT) provides high-detail visual clarity required to identify fine basilar reticular or ground-glass features typical of Interstitial Lung Disease.",
+        q23: "Chronic synovial pannus formations break down structures uniformly, manifesting radiographically via uniform joint space narrowing alongside marginal bone erosions.",
+        q24: "Smooth muscle architectural replacements inside the digestive layers induce local motor dysfunctions, resulting in fixed dilation signs upon barium transit evaluations.",
+        q25: "Type I anaphylactic reactions take place rapidly within minutes when foreign allergens crosslink surface-bound IgE frameworks on tissue mast cells.",
+        q26: "Type III immune diseases manifest when circulating soluble antigen-antibody blocks settle into fragile microvascular filters, activating localized complement cascades.",
+        q27: "Scleroderma is a chronic disease anchored by widespread fibroblast activation, inducing excessive collagen deposition and progressive visceral tissue fibrosis.",
+        q28: "Symmetrical layout preferences coupled with rigid morning joint restrictions lasting past one hour point definitively toward an underlying auto-destructive Rheumatoid style pathology.",
+        q29: "Advanced synovial capsule destruction produces clear structural changes, such as ulnar finger deviations and classic swan-neck patterns.",
+        q30: "The anti-nuclear antibody test shows exceptional sensitivity for Systemic Lupus Erythematosus profiles, making it a foundational screening marker.",
+        q31: "Pathologist Rupert Willis historically structured this text, defining a neoplasm's uncoordinated, excessive mass boundaries accurately.",
+        q32: "The word combines oncology roots ('oncos' meaning mass or bulk) directly into describing structural study focuses regarding benign or malignant tumor formats.",
+        q33: "Metaplasia updates structural arrangements to support adaptive baseline protection, shifting vulnerable epithelial lines into sturdier layers when irritated.",
+        q34: "Malignant tumors have the unique capability to breach structural basements, locally infiltrating surrounding tissues and metastasizing to distant organs.",
+        专题35: "The combination of the prefix 'adeno-' (gland) alongside the clear suffix '-oma' identifies a completely benign epithelial transformation of glandular structures.",
+        q36: "Sarcomas identify malignant structural lines that derive specifically from raw mesenchymal elements like bones, cartilage, or fatty tissues.",
+        q37: "Melanoma represents an exceptionally dangerous skin cancer. It is a critical exception because it uses the benign-sounding '-oma' suffix despite its high malignancy.",
+        q38: "Hamartomas form asymmetric masses consisting entirely of mature cellular lineages that are native to that host organ site.",
+        q39: "Carcinomas exhibit strong cellular tendencies to break into thin regional channels, tracking directly down toward regional lymphatic chains.",
+        q40: "Carcinoma in situ shows full-thickness cytological features of malignancy but remains strictly bounded by an intact basement membrane line."
+    };
+
+    function toggleHint(qNum) {
+        const hint = document.getElementById(`hint-${qNum}`);
+        hint.style.display = (hint.style.display === 'block') ? 'none' : 'block';
+    }
+
+    document.getElementById('quiz-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let score = 0;
+        const total = Object.keys(answers).length;
+
+        for (let i = 1; i <= total; i++) {
+            const qKey = `q${i}`;
+            const selected = document.querySelector(`input[name="${qKey}"]:checked`);
+            const expDiv = document.getElementById(`exp-${i}`);
+            const questionCard = document.querySelector(`[data-q="${i}"]`);
+            
+            // Clear prior states
+            expDiv.style.display = 'block';
+            questionCard.querySelectorAll('.option-item').forEach(el => el.classList.remove('correct-bg', 'incorrect-bg'));
+
+            if (selected) {
+                if (selected.value === answers[qKey]) {
+                    score++;
+                    selected.closest('.option-item').classList.add('correct-bg');
+                    expDiv.className = "explanation correct-bg";
+                    expDiv.innerHTML = `<strong>Correct!</strong> ${rationales[qKey]}`;
+                } else {
+                    selected.closest('.option-item').classList.add('incorrect-bg');
+                    expDiv.className = "explanation incorrect-bg";
+                    expDiv.innerHTML = `<strong>Incorrect.</strong> The correct answer is ${answers[qKey]}. ${rationales[qKey]}`;
+                }
+            } else {
+                expDiv.className = "explanation incorrect-bg";
+                expDiv.innerHTML = `<strong>Not Answered.</strong> The correct answer is ${answers[qKey]}. ${rationales[qKey]}`;
+            }
+        }
+
+        // Display summary score container
+        const resultContainer = document.getElementById('result-container');
+        resultContainer.style.display = 'block';
+        resultContainer.innerHTML = `Your Score: ${score} / ${total} (${Math.round((score/total)*100)}%)`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+</script>
+
+</body>
+</html>
