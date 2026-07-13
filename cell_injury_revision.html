@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>General Pathology: Cell Injury &amp; Adaptation — Revision</title>
+<style>
+  :root{
+    --bg: #f4f7fa;
+    --card-bg: #ffffff;
+    --ink: #1c2733;
+    --sub: #52626f;
+    --accent1: #2563eb; /* blue */
+    --accent2: #059669; /* green */
+    --accent3: #d97706; /* amber */
+    --accent4: #db2777; /* pink */
+    --accent5: #7c3aed; /* purple */
+    --accent6: #0891b2; /* cyan */
+    --correct: #059669;
+    --wrong: #dc2626;
+    --border-w: 3px;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{
+    margin:0; padding:0;
+    background: linear-gradient(180deg, #eef3f8 0%, #f6f9fc 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { max-width: 760px; margin: 0 auto; padding: 14px 14px 60px; }
+
+  header.top {
+    text-align:center;
+    padding: 18px 10px 14px;
+  }
+  header.top h1 {
+    font-size: 1.35rem;
+    margin: 0 0 4px;
+    color: var(--ink);
+    font-weight: 800;
+  }
+  header.top p {
+    margin: 0;
+    color: var(--sub);
+    font-size: 0.92rem;
+  }
+  header.top .tag {
+    display:inline-block;
+    margin-top: 8px;
+    background: #dbeafe;
+    color: #1e40af;
+    border: 2px solid #93c5fd;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  nav.tabs {
+    display:flex;
+    gap: 8px;
+    margin: 10px 0 18px;
+    position: sticky;
+    top: 0;
+    background: #eef3f8;
+    padding: 10px 0 8px;
+    z-index: 50;
+  }
+  nav.tabs button {
+    flex:1;
+    padding: 12px 6px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 12px;
+    border: var(--border-w) solid #c7d2e0;
+    background: #ffffff;
+    color: var(--sub);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  nav.tabs button.active {
+    background: var(--accent1);
+    border-color: #1d4ed8;
+    color: #fff;
+    box-shadow: 0 3px 0 #1e40af;
+  }
+  nav.tabs button:active { transform: translateY(1px); }
+
+  section.view { display:none; }
+  section.view.active { display:block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- FLASHCARDS ---------- */
+  .fc-progress {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom: 10px; font-size: 0.85rem; color: var(--sub); font-weight:600;
+  }
+  .fc-progress button {
+    background:#fff; border: 2px solid #c7d2e0; border-radius: 8px;
+    padding: 6px 10px; font-size: 0.78rem; font-weight:700; color:var(--sub); cursor:pointer;
+  }
+  .fc-wrap { perspective: 1400px; margin-bottom: 16px; }
+  .fc-card {
+    position: relative;
+    min-height: 230px;
+    border-radius: 18px;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(.4,.2,.2,1);
+  }
+  .fc-card.flipped { transform: rotateY(180deg); }
+  .fc-face {
+    position:absolute; inset:0;
+    backface-visibility: hidden;
+    border-radius: 18px;
+    padding: 22px 20px;
+    display:flex; flex-direction:column; justify-content:center;
+    border: var(--border-w) solid var(--accent1);
+    background: var(--card-bg);
+    box-shadow: 0 4px 14px rgba(30,60,110,0.10);
+  }
+  .fc-face.back { transform: rotateY(180deg); background:#f0f7ff; }
+  .fc-label {
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.6px;
+    font-weight: 800; color: var(--accent1); margin-bottom: 8px;
+  }
+  .fc-face.back .fc-label { color: var(--accent5); }
+  .fc-term { font-size: 1.25rem; font-weight: 800; color: var(--ink); line-height:1.35; }
+  .fc-def { font-size: 1.02rem; color: var(--ink); line-height:1.5; font-weight:500; }
+  .fc-hint { text-align:center; font-size:0.78rem; color:#8a98a6; margin-top:10px; font-weight:600; }
+
+  .fc-nav { display:flex; gap:10px; }
+  .fc-nav button {
+    flex:1; padding: 13px; border-radius: 12px; border: var(--border-w) solid #c7d2e0;
+    background:#fff; color: var(--ink); font-weight:800; font-size:0.95rem; cursor:pointer;
+  }
+  .fc-nav button.know { border-color: var(--correct); color: var(--correct); }
+  .fc-nav button.review { border-color: var(--accent3); color: var(--accent3); }
+  .fc-nav button:active { transform: translateY(1px); }
+
+  .fc-dots { display:flex; flex-wrap:wrap; gap:5px; margin-top:14px; justify-content:center; }
+  .fc-dot { width:10px; height:10px; border-radius:50%; background:#d7e0ea; border:1px solid #b9c6d4; }
+  .fc-dot.known { background: var(--correct); border-color:#047857; }
+  .fc-dot.reviewme { background: var(--accent3); border-color:#b45309; }
+  .fc-dot.current { outline: 2px solid var(--accent1); outline-offset:2px; }
+
+  /* ---------- QUIZ ---------- */
+  .quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .quiz-score { font-weight:800; font-size:0.9rem; color: var(--ink); }
+  .quiz-score span { color: var(--accent1); }
+  .qbar { height:8px; border-radius:6px; background:#dbe4ee; overflow:hidden; margin-bottom:16px; }
+  .qbar-fill { height:100%; background: linear-gradient(90deg, var(--accent1), var(--accent6)); border-radius:6px; transition: width 0.3s ease; }
+
+  .qcard {
+    background: var(--card-bg);
+    border: var(--border-w) solid var(--qcolor, var(--accent1));
+    border-radius: 16px;
+    padding: 18px 16px 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 14px rgba(30,60,110,0.08);
+  }
+  .qmeta { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .qtag {
+    font-size:0.68rem; font-weight:800; text-transform:uppercase; letter-spacing:0.4px;
+    padding:3px 9px; border-radius: 20px; border: 2px solid var(--qcolor, var(--accent1));
+    color: var(--qcolor, var(--accent1)); background: #fff;
+  }
+  .qnum { font-size:0.82rem; font-weight:800; color: var(--sub); margin-bottom:6px; }
+  .qtext { font-size: 1.02rem; font-weight:600; line-height:1.5; margin-bottom:14px; color: var(--ink); }
+
+  .opt {
+    display:flex; align-items:flex-start; gap:10px;
+    border: 2px solid #d3dce6;
+    border-radius: 12px;
+    padding: 12px 12px;
+    margin-bottom: 9px;
+    background: #fbfdff;
+    font-size: 0.96rem;
+    font-weight: 600;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+  .opt:active { transform: translateY(1px); }
+  .opt .optletter {
+    flex-shrink:0; width:26px; height:26px; border-radius:50%;
+    border: 2px solid #b9c6d4; display:flex; align-items:center; justify-content:center;
+    font-size:0.82rem; font-weight:800; color: var(--sub); background:#fff;
+  }
+  .opt.selected { border-color: var(--accent1); background: #eaf2ff; }
+  .opt.selected .optletter { border-color: var(--accent1); color: var(--accent1); }
+  .opt.correct { border-color: var(--correct); background: #e7f7ef; }
+  .opt.correct .optletter { background: var(--correct); border-color: var(--correct); color:#fff; }
+  .opt.incorrect { border-color: var(--wrong); background: #fdecec; }
+  .opt.incorrect .optletter { background: var(--wrong); border-color: var(--wrong); color:#fff; }
+  .opt.disabled { cursor: default; }
+
+  .qexplain {
+    margin-top: 10px; padding: 12px; border-radius: 10px;
+    background: #f7f9fc; border: 2px dashed #c7d2e0; font-size:0.9rem; color: var(--sub); display:none;
+  }
+  .qexplain.show { display:block; }
+  .qexplain b { color: var(--ink); }
+
+  .quiznav { display:flex; gap:10px; margin-top:6px; }
+  .quiznav button {
+    flex:1; padding:13px; border-radius:12px; border: var(--border-w) solid var(--accent1);
+    background: var(--accent1); color:#fff; font-weight:800; font-size:0.95rem; cursor:pointer;
+  }
+  .quiznav button.secondary { background:#fff; color: var(--accent1); }
+  .quiznav button:disabled { opacity:0.45; cursor:default; }
+
+  .resultbox {
+    text-align:center; padding: 26px 16px; background: var(--card-bg);
+    border: var(--border-w) solid var(--accent5); border-radius:18px;
+  }
+  .resultbox h2 { margin:0 0 6px; font-size:1.6rem; color: var(--accent5); }
+  .resultbox p { color: var(--sub); margin: 4px 0 18px; }
+  .resultbox button {
+    padding: 13px 22px; border-radius: 12px; border: var(--border-w) solid var(--accent5);
+    background: var(--accent5); color:#fff; font-weight:800; font-size:0.95rem; cursor:pointer;
+  }
+
+  /* ---------- KEY TAKEAWAYS ---------- */
+  .kt-block {
+    background: var(--card-bg);
+    border-left: 6px solid var(--kcolor, var(--accent1));
+    border-top: 2px solid #e3e9f0; border-right: 2px solid #e3e9f0; border-bottom: 2px solid #e3e9f0;
+    border-radius: 14px;
+    padding: 16px 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 3px 10px rgba(30,60,110,0.06);
+  }
+  .kt-block h3 {
+    margin: 0 0 8px; font-size: 1.05rem; color: var(--kcolor, var(--accent1)); font-weight:800;
+    display:flex; align-items:center; gap:8px;
+  }
+  .kt-block ul { margin: 0; padding-left: 20px; }
+  .kt-block li { margin-bottom: 6px; font-size: 0.95rem; line-height:1.5; color: var(--ink); }
+  .kt-block li b { color: var(--ink); }
+  .kt-icon {
+    width:28px; height:28px; border-radius:8px; background: var(--kcolor, var(--accent1));
+    color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0;
+  }
+
+  footer.credit { text-align:center; color:#9aa8b5; font-size:0.75rem; margin-top:22px; }
+
+  @media (min-width: 600px) {
+    .fc-card { min-height: 210px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1>Cell Injury &amp; Adaptation</h1>
+    <p>General Pathology Revision — Medical Imaging (Degree &amp; Diploma)</p>
+    <span class="tag">📘 Flashcards · Quiz · Key Takeaways</span>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="flash">Flashcards</button>
+    <button class="tab-btn" data-tab="quiz">Quiz</button>
+    <button class="tab-btn" data-tab="key">Key Takeaways</button>
+  </nav>
+
+  <!-- FLASHCARDS -->
+  <section class="view active" id="view-flash">
+    <div class="fc-progress">
+      <span id="fc-counter">Card 1 / 20</span>
+      <button id="fc-reset">Reset progress</button>
+    </div>
+    <div class="fc-wrap">
+      <div class="fc-card" id="fc-card">
+        <div class="fc-face front">
+          <div class="fc-label">Term</div>
+          <div class="fc-term" id="fc-term-text">—</div>
+          <div class="fc-hint">Tap card to reveal definition</div>
+        </div>
+        <div class="fc-face back">
+          <div class="fc-label">Definition / Key Point</div>
+          <div class="fc-def" id="fc-def-text">—</div>
+          <div class="fc-hint">Tap to flip back</div>
+        </div>
+      </div>
+    </div>
+    <div class="fc-nav">
+      <button class="review" id="fc-review">🔁 Review again</button>
+      <button class="know" id="fc-know">✅ I know this</button>
+    </div>
+    <div class="fc-nav" style="margin-top:10px;">
+      <button id="fc-prev">◀ Previous</button>
+      <button id="fc-next">Next ▶</button>
+    </div>
+    <div class="fc-dots" id="fc-dots"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="view" id="view-quiz">
+    <div id="quiz-area"></div>
+  </section>
+
+  <!-- KEY TAKEAWAYS -->
+  <section class="view" id="view-key">
+    <div id="key-area"></div>
+  </section>
+
+  <footer class="credit">General Pathology · Cell Injury, Adaptation, Necrosis &amp; Apoptosis</footer>
+</div>
+
+<script>
+/* ================= DATA ================= */
+const flashcards = [
+  {term:"Atrophy", def:"Decrease in the SIZE of cells/organ due to reduced workload, blood supply, nutrition, or stimulation — cells shrink but are still alive.", color:"var(--accent1)"},
+  {term:"Hypertrophy", def:"Increase in the SIZE of individual cells → increase in organ size (no new cells). Classic example: left ventricular hypertrophy in hypertension.", color:"var(--accent1)"},
+  {term:"Hyperplasia", def:"Increase in the NUMBER of cells in an organ/tissue, usually in response to a stimulus. Reversible — stops when the stimulus is removed. E.g. physiological enlargement of the uterus in pregnancy (with hypertrophy).", color:"var(--accent1)"},
+  {term:"Metaplasia", def:"Reversible replacement of ONE mature (adult) cell type by ANOTHER mature cell type, in response to chronic irritation. E.g. Barrett's esophagus (squamous → columnar); smoker's airway (ciliated columnar → squamous).", color:"var(--accent2)"},
+  {term:"Dysplasia", def:"Disordered, atypical cell growth — not a true adaptation. Considered a pre-neoplastic change, distinct from metaplasia.", color:"var(--accent2)"},
+  {term:"Reversible cell injury — key feature", def:"Earliest change is cellular/organelle SWELLING (ER swelling, ribosome detachment) due to failure of the Na⁺/K⁺ ATPase pump after ATP depletion. Structure can still recover if the stimulus is removed.", color:"var(--accent3)"},
+  {term:"Irreversible cell injury — key feature", def:"Defined by inability to reverse mitochondrial dysfunction and/or severe plasma membrane damage — the 'point of no return' leading to cell death.", color:"var(--accent3)"},
+  {term:"Why does swelling occur after ischemia?", def:"ATP falls → Na⁺/K⁺ pump fails → Na⁺ and water accumulate inside the cell → cellular and organelle swelling (hydropic change).", color:"var(--accent3)"},
+  {term:"Coagulative necrosis", def:"Protein denaturation dominates over enzymatic digestion — the tissue architecture ('ghost outline') is preserved for several days. Typical of infarcts in solid organs (heart, kidney, spleen) and dry gangrene, EXCEPT the brain.", color:"var(--accent4)"},
+  {term:"Liquefactive necrosis", def:"Enzymatic digestion dominates — dead tissue becomes a liquid, viscous mass. Classic in brain infarction (ischemic stroke) and in bacterial/abscess infections.", color:"var(--accent4)"},
+  {term:"Caseous necrosis", def:"A distinctive form combining features of coagulative and liquefactive necrosis — 'cheese-like' friable white appearance. Classic for tuberculosis granulomas.", color:"var(--accent4)"},
+  {term:"Fat necrosis", def:"Enzymatic destruction of fat (e.g. by lipase in acute pancreatitis), releasing fatty acids which bind calcium → chalky white areas (saponification); may show as microcalcifications on mammography (breast fat necrosis).", color:"var(--accent4)"},
+  {term:"Fibrinoid necrosis", def:"Deposition of antigen-antibody complexes and fibrin in vessel walls — seen in immune-mediated vasculitis and malignant hypertension.", color:"var(--accent4)"},
+  {term:"Nuclear changes in necrosis (order)", def:"Pyknosis (nuclear shrinkage, chromatin condensation) → Karyorrhexis (fragmentation of the nucleus) → Karyolysis (dissolution of chromatin, fading of the nucleus).", color:"var(--accent5)"},
+  {term:"Apoptosis vs Necrosis", def:"Apoptosis = programmed, energy-dependent cell death with chromatin condensation and cell fragmentation into apoptotic bodies — NO inflammatory response. Necrosis = pathological, membrane rupture with enzyme/content leakage → triggers inflammation.", color:"var(--accent5)"},
+  {term:"Caspase cascade", def:"The final common 'executioner' pathway shared by BOTH the intrinsic (mitochondrial) and extrinsic (death receptor) pathways of apoptosis.", color:"var(--accent5)"},
+  {term:"Dystrophic calcification", def:"Calcium deposition in DEAD or degenerating tissue with NORMAL serum calcium levels. E.g. calcification in atherosclerotic plaques, old TB lesions, damaged heart valves.", color:"var(--accent6)"},
+  {term:"Metastatic calcification", def:"Calcium deposition in NORMAL/living tissue, occurring secondary to elevated serum calcium (hypercalcemia) — e.g. in hyperparathyroidism or renal failure.", color:"var(--accent6)"},
+  {term:"Lipofuscin", def:"Insoluble, yellow-brown 'wear-and-tear' pigment that accumulates in aging or atrophic cells (lipid peroxidation product) — a marker of free radical injury over time, not itself harmful.", color:"var(--accent6)"},
+  {term:"Hepatic steatosis (fatty liver) — key trigger", def:"Intracellular accumulation of triglycerides mainly due to INCREASED synthesis or DECREASED secretion of lipoproteins from hepatocytes.", color:"var(--accent6)"}
+];
+
+const quizQuestions = [
+  {q:"A 45-year-old male has chronic reflux; endoscopy shows the normal stratified squamous epithelium of the lower esophagus replaced by columnar epithelium. Which adaptation is this?", opts:["Atrophy","Hyperplasia","Metaplasia","Hypertrophy"], answer:2, exp:"Barrett's esophagus is the classic example of metaplasia — replacement of one mature cell type by another in response to chronic irritation (acid reflux).", cat:"Adaptation"},
+  {q:"A 68-year-old with long-standing hypertension shows markedly increased left ventricular wall thickness on echo. Which response explains this?", opts:["Hypertrophy","Hyperplasia","Metaplasia","Dysplasia"], answer:0, exp:"Increased pressure load causes individual myocyte enlargement — hypertrophy — since cardiac myocytes have very limited regenerative capacity.", cat:"Adaptation"},
+  {q:"A 62-year-old female has an acute ischemic stroke. Which necrosis type is characteristic of infarcted brain tissue?", opts:["Coagulative necrosis","Liquefactive necrosis","Caseous necrosis","Fat necrosis"], answer:1, exp:"The brain is a key exception to coagulative necrosis after infarction — its high lipid content and enzyme activity favour liquefactive necrosis.", cat:"Necrosis"},
+  {q:"A smoker's bronchial biopsy shows the normal ciliated pseudostratified columnar epithelium replaced by stratified squamous epithelium — a reversible change. What is this called?", opts:["Epithelial dysplasia","Squamous metaplasia","Glandular atrophy","Cellular hypertrophy"], answer:1, exp:"Chronic irritation from smoking causes squamous metaplasia of the airway epithelium — a protective but reversible adaptation.", cat:"Adaptation"},
+  {q:"A pregnant uterus enlarges symmetrically by the third month. Which mechanism primarily explains this physiological enlargement?", opts:["Hypertrophy and hyperplasia","Metaplasia and dysplasia","Atrophy and hypertrophy","Hyperplasia and metaplasia"], answer:0, exp:"Pregnancy-related uterine enlargement is due to BOTH hypertrophy (larger myocytes) and hyperplasia (more myocytes) driven by estrogen.", cat:"Adaptation"},
+  {q:"A patient with acute MI has elevated cardiac troponin. Which cellular event directly explains leakage of this enzyme into blood?", opts:["Detachment of ribosomes from rough ER","Loss of plasma membrane integrity with cellular contents spilling out","Swelling of mitochondria due to sodium influx","Clumping of nuclear chromatin from decreased intracellular pH"], answer:1, exp:"Enzyme leakage into blood (e.g. troponin, CK) requires plasma membrane rupture — a hallmark of IRREVERSIBLE injury, not the earlier reversible changes.", cat:"Cell Injury"},
+  {q:"An elderly patient with PVD has a shriveled, black, cold great toe with a sharp line of demarcation, non-infected. What is the primary tissue change?", opts:["Liquefactive necrosis","Caseous necrosis","Coagulative necrosis","Fibrinoid necrosis"], answer:2, exp:"Dry gangrene of an extremity from ischemia is a form of coagulative necrosis — architecture (tissue outline) is preserved despite cell death.", cat:"Necrosis"},
+  {q:"A crush injury causes marked elevation of serum potassium and creatine kinase from muscle damage. What is the primary driver of this irreversible cell death?", opts:["Accumulation of intracellular cholesterol crystals","Depletion of intracellular glycogen stores","Influx of calcium ions into the cytoplasm","Efflux of sodium ions into the extracellular space"], answer:2, exp:"Sustained rise in cytosolic calcium activates destructive enzymes (proteases, phospholipases, ATPases, endonucleases) — the final common pathway to irreversible injury.", cat:"Cell Injury"},
+  {q:"A patient with CKD has incidental dense calcification in the abdominal aortic wall, with NORMAL serum calcium and phosphate. What is this?", opts:["Dystrophic calcification","Metastatic calcification","Caseous calcification","Fibrinoid calcification"], answer:0, exp:"Dystrophic calcification occurs in damaged/degenerated tissue (e.g. atherosclerotic vessel wall) with normal serum calcium levels.", cat:"Accumulations"},
+  {q:"During acute arterial occlusion causing muscle hypoxia, ATP drops. Which change is visible on EM at this EARLY stage?", opts:["Fragmented nuclear chromatin and ruptured cell membranes","Cellular swelling and detachment of ribosomes from rough ER","Large dense lysosomal aggregates and lipid vacuoles","Condensation of cytoplasm with apoptotic bodies"], answer:1, exp:"Early/reversible injury shows generalized swelling and ribosome detachment (impaired protein synthesis) — before any membrane rupture or nuclear fragmentation occurs.", cat:"Cell Injury"},
+  {q:"Autopsy of an elderly patient with dementia shows narrowed cerebral gyri and widened sulci. What process explains this?", opts:["Increased apoptosis of astrocytes","Coagulative necrosis of cerebral vessels","Chronic hypertrophy of microglial cells","Atrophy of neurons due to reduced stimulation"], answer:3, exp:"Senile brain atrophy reflects neuronal atrophy (and loss) from reduced stimulation/blood supply with age — cells shrink, reducing overall organ volume.", cat:"Adaptation"},
+  {q:"Thyroid biopsy shows increased follicular cell NUMBER with normal architecture, no malignancy. What feature best distinguishes this adaptive process from true neoplasia?", opts:["Proliferation ceases when the stimulus is removed","High degree of anaplasia and pleomorphism","Tissue invades the surrounding capsule and lymphatics","Involves a mutation causing autonomous growth"], answer:0, exp:"Hyperplasia is a controlled, reversible response to a stimulus — proliferation stops once the stimulus is withdrawn, unlike autonomous neoplastic growth.", cat:"Adaptation"},
+  {q:"Which process describes replacement of one adult cell type by another in response to chronic irritation?", opts:["Atrophy","Hyperplasia","Metaplasia","Dysplasia"], answer:2, exp:"This is the textbook definition of metaplasia.", cat:"Adaptation"},
+  {q:"Which change characteristically occurs during the INITIAL, reversible stage of cell injury?", opts:["Karyorrhexis of the nucleus","Rupture of the plasma membrane","Swelling of the endoplasmic reticulum","Lysis of the lysosomes"], answer:2, exp:"ER swelling is an early, reversible ultrastructural change; the other options represent irreversible/late injury.", cat:"Cell Injury"},
+  {q:"Which necrosis type is characteristically seen after ischemic injury to the CNS?", opts:["Coagulative necrosis","Liquefactive necrosis","Caseous necrosis","Fat necrosis"], answer:1, exp:"CNS infarction classically produces liquefactive necrosis.", cat:"Necrosis"},
+  {q:"Which term describes an increase in organ/tissue size due to increase in the SIZE of individual cells?", opts:["Hyperplasia","Hypertrophy","Metaplasia","Neoplasia"], answer:1, exp:"By definition, hypertrophy = increased cell size (not number).", cat:"Adaptation"},
+  {q:"Which hallmark distinctively separates IRREVERSIBLE from reversible cell injury?", opts:["Inability to reverse mitochondrial dysfunction","Direct loss of intracellular glycogen stores","Accumulation of intracellular lipofuscin pigments","Formation of standard cytoplasmic blebs"], answer:0, exp:"Irreversible mitochondrial dysfunction (permeability transition, failure of oxidative phosphorylation) is the key point of no return.", cat:"Cell Injury"},
+  {q:"Which mechanism directly explains why cellular swelling occurs rapidly after an acute ischemic insult?", opts:["Inactivation of intracellular caspases","Failure of the sodium-potassium pump","Increased synthesis of ATP","Accelerated efflux of intracellular water"], answer:1, exp:"ATP depletion → Na⁺/K⁺ ATPase pump fails → Na⁺ and water accumulate intracellularly → cell swelling.", cat:"Cell Injury"},
+  {q:"Which process describes deposition of calcium salts in dead/degenerated tissue with NORMAL serum calcium levels?", opts:["Metastatic calcification","Dystrophic calcification","Caseous calcification","Fibrinoid calcification"], answer:1, exp:"This is the definition of dystrophic calcification (as opposed to metastatic, which occurs with elevated serum calcium).", cat:"Accumulations"},
+  {q:"Which event is the primary 'executioner' phase shared by BOTH intrinsic and extrinsic pathways of apoptosis?", opts:["Activation of caspase cascades","Influx of sodium ions","Degradation of glycogen stores","Synthesis of fatty acids"], answer:0, exp:"Both pathways converge on caspase activation, which executes the final apoptotic changes.", cat:"Apoptosis"},
+  {q:"Which necrosis type preserves the basic structural outline of dead tissue for several days?", opts:["Liquefactive necrosis","Caseous necrosis","Coagulative necrosis","Fibrinoid necrosis"], answer:2, exp:"Coagulative necrosis preserves the 'ghost' architectural outline of the tissue because protein denaturation outpaces enzymatic digestion.", cat:"Necrosis"},
+  {q:"Which insoluble, yellowish-brown 'wear-and-tear' pigment accumulates in aging or atrophied cells?", opts:["Melanin","Hemosiderin","Lipofuscin","Bilirubin"], answer:2, exp:"Lipofuscin is the classic age/wear-related pigment, derived from lipid peroxidation of membranes.", cat:"Accumulations"},
+  {q:"Which sequence correctly traces the progressive nuclear changes seen during necrosis?", opts:["Pyknosis → karyorrhexis → karyolysis","Karyolysis → pyknosis → karyorrhexis","Karyorrhexis → karyolysis → pyknosis","Pyknosis → karyolysis → karyorrhexis"], answer:0, exp:"Order: Pyknosis (shrink/condense) → Karyorrhexis (fragment) → Karyolysis (dissolve).", cat:"Necrosis"},
+  {q:"Which mammogram finding is most directly caused by fatty acids reacting with calcium during fat necrosis?", opts:["Generalized tissue edema","Uniform tissue radiolucency","Scattered microcalcifications","Large fluid-filled cysts"], answer:2, exp:"Saponification (fatty acid + calcium) in fat necrosis produces chalky deposits that appear as microcalcifications on mammography — highly relevant for imaging students.", cat:"Necrosis"},
+  {q:"Which adaptation explains why a long-term smoker loses the coordinated ciliary clearing mechanism of the airway?", opts:["Atrophy of alveolar smooth muscle","Hyperplasia of connective tissue","Metaplasia of ciliated columnar epithelium","Hypertrophy of superficial squamous cells"], answer:2, exp:"Squamous metaplasia replaces functional ciliated epithelium with non-ciliated squamous epithelium, impairing mucociliary clearance.", cat:"Adaptation"},
+  {q:"Which feature reliably differentiates apoptosis from necrosis?", opts:["Cellular fragmentation without a surrounding inflammatory response","Cellular degeneration with massive influx of extracellular fluid","Plasma membrane disintegration with immediate enzyme leakage","Nuclear chromatin condensation without any enzymatic cleavage"], answer:0, exp:"Apoptosis is a 'clean', programmed process — cell fragments (apoptotic bodies) are phagocytosed without triggering inflammation, unlike necrosis.", cat:"Apoptosis"},
+  {q:"Which metabolic disturbance is the crucial trigger initiating intracellular triglyceride accumulation in hepatic steatosis?", opts:["Increased utilization of fatty acids due to hyperoxemia","Decreased synthesis of alpha-glycerophosphate in cytosol","Increased synthesis or decreased secretion of lipoproteins","Decreased conversion of fatty acids into cellular cholesterol"], answer:2, exp:"Fatty liver most often results from an imbalance favouring triglyceride synthesis over lipoprotein export from hepatocytes.", cat:"Accumulations"}
+];
+
+const keyTakeaways = [
+  {title:"🔄 Cellular Adaptations", color:"var(--accent1)",
+   points:[
+    "<b>Atrophy</b> = ↓ cell size. <b>Hypertrophy</b> = ↑ cell size. <b>Hyperplasia</b> = ↑ cell number.",
+    "<b>Metaplasia</b> = one mature cell type replaced by another (reversible), due to chronic irritation.",
+    "<b>Dysplasia</b> is disordered growth, considered pre-neoplastic — not a normal adaptive response.",
+    "Pregnancy uterine growth = hypertrophy <i>and</i> hyperplasia together."
+   ]},
+  {title:"⚡ Reversible vs Irreversible Injury", color:"var(--accent3)",
+   points:[
+    "Early/reversible: ATP ↓ → Na⁺/K⁺ pump fails → cellular &amp; ER swelling, ribosome detachment.",
+    "Irreversible point of no return: permanent mitochondrial dysfunction and/or plasma membrane rupture.",
+    "Enzyme leakage into blood (troponin, CK) only happens once the plasma membrane is breached — a sign of irreversible injury.",
+    "Sustained calcium influx activates destructive enzymes and drives the cell past the point of no return."
+   ]},
+  {title:"🧫 Necrosis Types", color:"var(--accent4)",
+   points:[
+    "<b>Coagulative</b> — architecture preserved (protein denaturation &gt; digestion). Typical of infarcts in solid organs; <b>brain is the exception</b>.",
+    "<b>Liquefactive</b> — enzymatic digestion dominates → liquid mass. Classic for brain infarcts and bacterial abscesses.",
+    "<b>Caseous</b> — cheese-like, combines coagulative + liquefactive features. Classic for TB.",
+    "<b>Fat necrosis</b> — lipase releases fatty acids that bind calcium (saponification) → chalky deposits/microcalcifications (relevant on mammography).",
+    "<b>Fibrinoid</b> — immune complex + fibrin deposition in vessel walls (vasculitis, malignant hypertension)."
+   ]},
+  {title:"☠️ Apoptosis vs Necrosis", color:"var(--accent5)",
+   points:[
+    "Nuclear change order in necrosis: <b>Pyknosis → Karyorrhexis → Karyolysis</b>.",
+    "Apoptosis = programmed, energy-dependent, NO inflammation, ends in apoptotic bodies.",
+    "Necrosis = pathological, membrane rupture, enzyme leakage, DOES trigger inflammation.",
+    "Both intrinsic and extrinsic apoptotic pathways converge on <b>caspase activation</b> as the executioner step."
+   ]},
+  {title:"🧪 Pathologic Calcification &amp; Pigments", color:"var(--accent6)",
+   points:[
+    "<b>Dystrophic calcification</b> = calcium in dead/damaged tissue, serum calcium NORMAL.",
+    "<b>Metastatic calcification</b> = calcium in normal tissue, driven by elevated serum calcium (e.g. hyperparathyroidism, renal failure).",
+    "<b>Lipofuscin</b> = yellow-brown 'wear-and-tear' pigment in aging/atrophic cells (lipid peroxidation).",
+    "<b>Hepatic steatosis</b> mainly from increased triglyceride synthesis or decreased lipoprotein secretion by hepatocytes."
+   ]},
+  {title:"🩻 Imaging-relevant Correlates", color:"var(--accent2)",
+   points:[
+    "Fat necrosis → scattered microcalcifications on mammography (saponification of fatty acids).",
+    "Dystrophic calcification → visible calcified plaques/old TB foci/damaged valves on imaging despite normal serum calcium.",
+    "Coagulative necrosis (infarcts) vs liquefactive necrosis (brain/abscess) — different imaging appearances (solid demarcated area vs cystic/liquefied cavity).",
+    "Senile brain atrophy → narrowed gyri, widened sulci on CT/MRI — a normal ageing correlate to recognise vs pathological atrophy."
+   ]}
+];
+
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ================= FLASHCARDS LOGIC ================= */
+let fcIndex = 0;
+let fcFlipped = false;
+let fcStatus = {}; // index -> 'known' | 'review'
+
+function loadFcProgress(){
+  try{
+    const saved = localStorage.getItem('cellinjury_fc_progress');
+    if(saved) fcStatus = JSON.parse(saved);
+  }catch(e){}
+}
+function saveFcProgress(){
+  try{ localStorage.setItem('cellinjury_fc_progress', JSON.stringify(fcStatus)); }catch(e){}
+}
+
+function renderFlashcard(){
+  const card = flashcards[fcIndex];
+  document.getElementById('fc-term-text').textContent = card.term;
+  document.getElementById('fc-def-text').textContent = card.def;
+  document.getElementById('fc-counter').textContent = `Card ${fcIndex+1} / ${flashcards.length}`;
+  const fcCardEl = document.getElementById('fc-card');
+  fcCardEl.classList.remove('flipped');
+  fcFlipped = false;
+  document.querySelectorAll('.fc-face').forEach(f=> f.style.borderColor = card.color);
+  renderDots();
+}
+
+function renderDots(){
+  const dotsEl = document.getElementById('fc-dots');
+  dotsEl.innerHTML = '';
+  flashcards.forEach((c, i)=>{
+    const d = document.createElement('div');
+    d.className = 'fc-dot';
+    if(fcStatus[i]==='known') d.className += ' known';
+    if(fcStatus[i]==='reviewme') d.className += ' reviewme';
+    if(i===fcIndex) d.className += ' current';
+    dotsEl.appendChild(d);
+  });
+}
+
+document.getElementById('fc-card').addEventListener('click', ()=>{
+  fcFlipped = !fcFlipped;
+  document.getElementById('fc-card').classList.toggle('flipped', fcFlipped);
+});
+
+document.getElementById('fc-next').addEventListener('click', ()=>{
+  fcIndex = (fcIndex+1) % flashcards.length;
+  renderFlashcard();
+});
+document.getElementById('fc-prev').addEventListener('click', ()=>{
+  fcIndex = (fcIndex-1+flashcards.length) % flashcards.length;
+  renderFlashcard();
+});
+document.getElementById('fc-know').addEventListener('click', ()=>{
+  fcStatus[fcIndex] = 'known';
+  saveFcProgress();
+  fcIndex = (fcIndex+1) % flashcards.length;
+  renderFlashcard();
+});
+document.getElementById('fc-review').addEventListener('click', ()=>{
+  fcStatus[fcIndex] = 'reviewme';
+  saveFcProgress();
+  fcIndex = (fcIndex+1) % flashcards.length;
+  renderFlashcard();
+});
+document.getElementById('fc-reset').addEventListener('click', ()=>{
+  if(confirm('Reset all flashcard progress?')){
+    fcStatus = {};
+    saveFcProgress();
+    renderDots();
+  }
+});
+
+loadFcProgress();
+renderFlashcard();
+
+/* ================= QUIZ LOGIC ================= */
+const colors = ['var(--accent1)','var(--accent2)','var(--accent3)','var(--accent4)','var(--accent5)','var(--accent6)'];
+let quizIndex = 0;
+let quizAnswers = new Array(quizQuestions.length).fill(null);
+let quizAnswered = new Array(quizQuestions.length).fill(false);
+
+function renderQuiz(){
+  const area = document.getElementById('quiz-area');
+  if(quizIndex >= quizQuestions.length){
+    renderQuizResult();
+    return;
+  }
+  const q = quizQuestions[quizIndex];
+  const color = colors[quizIndex % colors.length];
+  const answered = quizAnswered[quizIndex];
+  const selected = quizAnswers[quizIndex];
+  const score = quizAnswers.filter((a,i)=> quizAnswered[i] && a === quizQuestions[i].answer).length;
+  const answeredCount = quizAnswered.filter(Boolean).length;
+
+  let optsHtml = '';
+  q.opts.forEach((opt, i)=>{
+    let cls = 'opt';
+    if(answered){
+      cls += ' disabled';
+      if(i === q.answer) cls += ' correct';
+      else if(i === selected) cls += ' incorrect';
+    } else if(i === selected){
+      cls += ' selected';
+    }
+    optsHtml += `<div class="${cls}" data-idx="${i}">
+      <div class="optletter">${String.fromCharCode(65+i)}</div>
+      <div>${opt}</div>
+    </div>`;
+  });
+
+  area.innerHTML = `
+    <div class="quiz-header">
+      <div class="quiz-score">Score: <span>${score}</span> / ${answeredCount}</div>
+      <div class="quiz-score">${quizIndex+1} / ${quizQuestions.length}</div>
+    </div>
+    <div class="qbar"><div class="qbar-fill" style="width:${((quizIndex)/quizQuestions.length)*100}%"></div></div>
+    <div class="qcard" style="--qcolor:${color}">
+      <div class="qmeta"><span class="qtag">${q.cat}</span></div>
+      <div class="qnum">Question ${quizIndex+1}</div>
+      <div class="qtext">${q.q}</div>
+      <div id="opts-container">${optsHtml}</div>
+      <div class="qexplain ${answered ? 'show' : ''}" id="qexplain">
+        <b>${answered ? (selected===q.answer ? 'Correct! ' : 'Not quite. ') : ''}</b>${answered ? q.exp : ''}
+      </div>
+    </div>
+    <div class="quiznav">
+      <button class="secondary" id="quiz-prev" ${quizIndex===0 ? 'disabled':''}>◀ Previous</button>
+      <button id="quiz-next" ${answered ? '' : 'disabled'}>${quizIndex===quizQuestions.length-1 ? 'See Results' : 'Next ▶'}</button>
+    </div>
+  `;
+
+  document.querySelectorAll('#opts-container .opt').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      if(quizAnswered[quizIndex]) return;
+      const idx = parseInt(el.dataset.idx);
+      quizAnswers[quizIndex] = idx;
+      quizAnswered[quizIndex] = true;
+      saveQuizProgress();
+      renderQuiz();
+    });
+  });
+  document.getElementById('quiz-prev').addEventListener('click', ()=>{
+    quizIndex--; renderQuiz();
+  });
+  document.getElementById('quiz-next').addEventListener('click', ()=>{
+    quizIndex++; renderQuiz();
+  });
+}
+
+function renderQuizResult(){
+  const area = document.getElementById('quiz-area');
+  const score = quizAnswers.filter((a,i)=> a === quizQuestions[i].answer).length;
+  const pct = Math.round((score/quizQuestions.length)*100);
+  let msg = "Great effort — keep revising!";
+  if(pct >= 85) msg = "Excellent work! 🌟";
+  else if(pct >= 70) msg = "Good job — a few more reps and you've got it.";
+  else if(pct >= 50) msg = "Solid start — review the topics you missed.";
+
+  area.innerHTML = `
+    <div class="resultbox">
+      <h2>${score} / ${quizQuestions.length}</h2>
+      <p>${pct}% correct — ${msg}</p>
+      <button id="quiz-restart">🔁 Restart Quiz</button>
+    </div>
+  `;
+  document.getElementById('quiz-restart').addEventListener('click', ()=>{
+    quizIndex = 0;
+    quizAnswers = new Array(quizQuestions.length).fill(null);
+    quizAnswered = new Array(quizQuestions.length).fill(false);
+    saveQuizProgress();
+    renderQuiz();
+  });
+}
+
+function saveQuizProgress(){
+  try{
+    localStorage.setItem('cellinjury_quiz_progress', JSON.stringify({quizIndex, quizAnswers, quizAnswered}));
+  }catch(e){}
+}
+function loadQuizProgress(){
+  try{
+    const saved = localStorage.getItem('cellinjury_quiz_progress');
+    if(saved){
+      const data = JSON.parse(saved);
+      quizIndex = data.quizIndex || 0;
+      quizAnswers = data.quizAnswers || new Array(quizQuestions.length).fill(null);
+      quizAnswered = data.quizAnswered || new Array(quizQuestions.length).fill(false);
+    }
+  }catch(e){}
+}
+
+loadQuizProgress();
+renderQuiz();
+
+/* ================= KEY TAKEAWAYS ================= */
+function renderKeyTakeaways(){
+  const area = document.getElementById('key-area');
+  area.innerHTML = keyTakeaways.map(block=>`
+    <div class="kt-block" style="--kcolor:${block.color}">
+      <h3><span class="kt-icon">${block.title.split(' ')[0]}</span>${block.title.substring(block.title.indexOf(' ')+1)}</h3>
+      <ul>${block.points.map(p=>`<li>${p}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+renderKeyTakeaways();
+</script>
+</body>
+</html>
