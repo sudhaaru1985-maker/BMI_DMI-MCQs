@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI Pathology Revision</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm, clinical study tool for imaging students
+   IDEA: an H&E-stained slide box; each topic is a labelled slide
+   PICTURE: the working question card itself, at the top
+   COLOUR and TYPE: haematoxylin purple field, eosin pink accent, white; Source Serif 4 titles, Source Sans 3 body
+   LAYOUT: header band, topic filter row, mode tabs, one column of content up to 820px */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#15121d);--panel:light-dark(#ffffff,#1e1a29);--soft:light-dark(#f8f1f5,#241e30);
+--ink:light-dark(#1d1726,#efe9f5);--sub:light-dark(#5e5469,#b6abc4);--line:light-dark(#e4dbe6,#3a3148);
+--hx:light-dark(#3b2c66,#2a1f4a);--hx2:light-dark(#5a4594,#a996e6);--eo:light-dark(#c2346a,#f07aa6);
+--ok:light-dark(#11795a,#4fd1a1);--okbg:light-dark(#e6f6ef,#163329);--no:light-dark(#b4232c,#ff8a8f);--nobg:light-dark(#fdecec,#3a1c22)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Source Sans 3",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;line-height:1.1;text-wrap:balance;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,textarea:focus-visible{outline:3px solid var(--eo);outline-offset:2px}
+.top{background:var(--hx);color:#fff;padding:clamp(24px,4vw,44px) max(5vw,16px) 22px}
+.top .in,.wrap{max-width:820px;margin:0 auto}
+.top p{margin:6px 0 0;color:#d9d0f0}
+.top h1{font-size:clamp(30px,5vw,44px)}
+.stats{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:16px;font-size:15px;color:#e9e3f7}
+.stats b{font-size:22px;color:#fff;margin-right:4px}
+.wrap{padding:18px max(4vw,14px) 60px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+.chip{border:1.5px solid var(--line);background:var(--panel);border-radius:99px;padding:8px 14px;min-height:40px;font-weight:600;font-size:15px;color:var(--sub)}
+.chip.on{background:var(--eo);border-color:var(--eo);color:#fff}
+.chip small{font-weight:500;opacity:.8;margin-left:4px}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;background:var(--soft);padding:4px;border-radius:12px;margin-bottom:18px;position:sticky;top:0;z-index:5}
+.tab{border:0;background:none;border-radius:9px;padding:10px 4px;min-height:44px;font-weight:700;color:var(--sub);font-size:15px}
+.tab.on{background:var(--panel);color:var(--hx2);box-shadow:0 1px 4px rgba(40,20,70,.15)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(18px,3vw,28px);margin-bottom:14px}
+.meta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--sub);margin-bottom:10px}
+.tag{display:inline-block;font-size:13px;font-weight:700;color:var(--hx2);background:var(--soft);border-radius:99px;padding:3px 10px}
+.bar{height:6px;background:var(--soft);border-radius:9px;overflow:hidden;margin:0 0 16px}
+.bar i{display:block;height:100%;background:var(--eo);transition:width .3s}
+.q{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(18px,2.4vw,21px);line-height:1.45;margin:6px 0 18px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;border:1.5px solid var(--line);background:var(--panel);border-radius:11px;padding:12px 14px;margin-bottom:9px;min-height:48px;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--hx2)}
+.opt .l{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-weight:700;font-size:14px;color:var(--sub)}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}.opt.ok .l{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.no{border-color:var(--no);background:var(--nobg)}.opt.no .l{background:var(--no);border-color:var(--no);color:#fff}
+.opt.dim{opacity:.5}.opt:disabled{cursor:default}
+.exp{margin-top:12px;padding:14px 16px;border-radius:11px;background:var(--soft);font-size:15.5px}
+.exp b{display:block;margin-bottom:4px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn{border:1.5px solid var(--hx2);background:var(--hx2);color:#fff;border-radius:10px;padding:10px 18px;min-height:44px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--hx2)}
+.btn:disabled{opacity:.4;cursor:default}
+.grow{flex:1}
+.big{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(44px,8vw,64px);font-weight:700;color:var(--hx2);line-height:1}
+.tbar{display:grid;grid-template-columns:minmax(0,10em) minmax(0,1fr) 4.5em;gap:10px;align-items:center;margin:8px 0;font-size:15px}
+.tbar .t{height:10px;background:var(--soft);border-radius:9px;overflow:hidden}.tbar .t i{display:block;height:100%;background:var(--ok)}
+.tbar span:last-child{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rev{border-top:1px solid var(--line);padding:12px 0;font-size:15px}
+.rev .mk{font-weight:700}.rev .ok{color:var(--ok)}.rev .no{color:var(--no)}
+.saq h3{font-size:19px;margin:4px 0 10px;line-height:1.35}
+.marks{white-space:nowrap;font-weight:700;color:var(--eo)}
+textarea{width:100%;min-height:110px;font:16px/1.5 inherit;font-family:inherit;color:var(--ink);background:var(--soft);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical}
+.ans{margin-top:12px;padding:14px 18px;border-radius:11px;background:var(--okbg);border:1px solid var(--line)}
+.ans ul{margin:6px 0;padding-left:20px}.ans li{margin:3px 0}
+.ans table{border-collapse:collapse;width:100%;font-size:14.5px;margin:6px 0}
+.ans th,.ans td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.ans th{background:var(--panel)}
+.flip{perspective:1400px;margin-bottom:14px}
+.fc{position:relative;min-height:250px;transform-style:preserve-3d;transition:transform .5s;cursor:pointer;border:0;background:none;width:100%;padding:0;text-align:left}
+.fc.f{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;border:1.5px solid var(--line);background:var(--panel);padding:24px;display:flex;flex-direction:column;justify-content:center}
+.face.back{transform:rotateY(180deg);background:var(--soft)}
+.face small{font-weight:700;color:var(--eo);margin-bottom:8px}
+.face .term{font-family:"Source Serif 4",Georgia,serif;font-size:24px;font-weight:700}
+.face .def{font-size:17px}
+.hint{font-size:13px;color:var(--sub);margin-top:12px}
+.dots{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:14px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--line)}.dot.k{background:var(--ok)}.dot.r{background:#d98b1c}.dot.c{outline:2px solid var(--hx2);outline-offset:2px}
+.kp h2{font-size:24px;margin:22px 0 10px;color:var(--hx2)}
+.kp h3{font-size:18px;margin-bottom:8px}
+.kp ul{margin:0;padding-left:20px}.kp li{margin:5px 0}
+.note{font-size:14px;color:var(--sub)}
+@media(max-width:600px){.tab{font-size:14px}.tbar{grid-template-columns:minmax(0,7em) minmax(0,1fr) 4em}.fc{min-height:300px}}
+@media(prefers-reduced-motion:reduce){.fc{transition:none}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <h1>Pathology revision</h1>
+  <p>Bachelor of Medical Imaging · MAHSA University · Dr. Sudha Arumugam</p>
+  <div class="stats" id="stats"></div>
+</div></header>
+
+<main class="wrap">
+  <div class="chips" id="chips" role="group" aria-label="Topic filter"></div>
+  <nav class="tabs" role="tablist">
+    <button class="tab on" data-v="mcq">MCQs</button>
+    <button class="tab" data-v="saq">Short answers</button>
+    <button class="tab" data-v="fc">Flashcards</button>
+    <button class="tab" data-v="kp">Key points</button>
+  </nav>
+  <section id="view"></section>
+</main>
+
+<script>
+{
+const TOPICS=[
+ {id:'ci',n:'Cell injury & adaptation'},
+ {id:'inf',n:'Inflammation'},
+ {id:'hr',n:'Healing & repair'},
+ {id:'hd',n:'Haemodynamic disorders'},
+ {id:'im',n:'Immunity'}];
+const TN=Object.fromEntries(TOPICS.map(t=>[t.id,t.n]));
+
+/* ---------- MCQs ---------- */
+const MCQ=[
+/* Cell injury & adaptation */
+{t:'ci',s:'Adaptation',q:"A 45-year-old male has chronic reflux; endoscopy shows the normal stratified squamous epithelium of the lower esophagus replaced by columnar epithelium. Which adaptation is this?",o:["Atrophy","Hyperplasia","Metaplasia","Hypertrophy"],a:2,e:"Barrett's esophagus is the classic example of metaplasia: replacement of one mature cell type by another in response to chronic irritation (acid reflux)."},
+{t:'ci',s:'Adaptation',q:"A 68-year-old with long-standing hypertension shows markedly increased left ventricular wall thickness on echo. Which response explains this?",o:["Hypertrophy","Hyperplasia","Metaplasia","Dysplasia"],a:0,e:"Increased pressure load causes individual myocyte enlargement (hypertrophy), since cardiac myocytes have very limited regenerative capacity."},
+{t:'ci',s:'Necrosis',q:"A 62-year-old female has an acute ischemic stroke. Which necrosis type is characteristic of infarcted brain tissue?",o:["Coagulative necrosis","Liquefactive necrosis","Caseous necrosis","Fat necrosis"],a:1,e:"The brain is a key exception to coagulative necrosis after infarction. Its high lipid content and enzyme activity favour liquefactive necrosis."},
+{t:'ci',s:'Adaptation',q:"A smoker's bronchial biopsy shows the normal ciliated pseudostratified columnar epithelium replaced by stratified squamous epithelium, a reversible change. What is this called?",o:["Epithelial dysplasia","Squamous metaplasia","Glandular atrophy","Cellular hypertrophy"],a:1,e:"Chronic irritation from smoking causes squamous metaplasia of the airway epithelium, a protective but reversible adaptation."},
+{t:'ci',s:'Adaptation',q:"A pregnant uterus enlarges symmetrically by the third month. Which mechanism primarily explains this physiological enlargement?",o:["Hypertrophy and hyperplasia","Metaplasia and dysplasia","Atrophy and hypertrophy","Hyperplasia and metaplasia"],a:0,e:"Pregnancy-related uterine enlargement is due to both hypertrophy (larger myocytes) and hyperplasia (more myocytes) driven by oestrogen."},
+{t:'ci',s:'Cell injury',q:"A patient with acute MI has elevated cardiac troponin. Which cellular event directly explains leakage of this enzyme into blood?",o:["Detachment of ribosomes from rough ER","Loss of plasma membrane integrity with cellular contents spilling out","Swelling of mitochondria due to sodium influx","Clumping of nuclear chromatin from decreased intracellular pH"],a:1,e:"Enzyme leakage into blood (troponin, CK) requires plasma membrane rupture, a hallmark of irreversible injury, not the earlier reversible changes."},
+{t:'ci',s:'Necrosis',q:"An elderly patient with PVD has a shriveled, black, cold great toe with a sharp line of demarcation, non-infected. What is the primary tissue change?",o:["Liquefactive necrosis","Caseous necrosis","Coagulative necrosis","Fibrinoid necrosis"],a:2,e:"Dry gangrene of an extremity from ischaemia is a form of coagulative necrosis. The tissue outline is preserved despite cell death."},
+{t:'ci',s:'Cell injury',q:"A crush injury causes marked elevation of serum potassium and creatine kinase from muscle damage. What is the primary driver of this irreversible cell death?",o:["Accumulation of intracellular cholesterol crystals","Depletion of intracellular glycogen stores","Influx of calcium ions into the cytoplasm","Efflux of sodium ions into the extracellular space"],a:2,e:"A sustained rise in cytosolic calcium activates destructive enzymes (proteases, phospholipases, ATPases, endonucleases), the final common pathway to irreversible injury."},
+{t:'ci',s:'Accumulations',q:"A patient with CKD has incidental dense calcification in the abdominal aortic wall, with NORMAL serum calcium and phosphate. What is this?",o:["Dystrophic calcification","Metastatic calcification","Caseous calcification","Fibrinoid calcification"],a:0,e:"Dystrophic calcification occurs in damaged or degenerated tissue (such as an atherosclerotic vessel wall) with normal serum calcium levels."},
+{t:'ci',s:'Cell injury',q:"During acute arterial occlusion causing muscle hypoxia, ATP drops. Which change is visible on EM at this EARLY stage?",o:["Fragmented nuclear chromatin and ruptured cell membranes","Cellular swelling and detachment of ribosomes from rough ER","Large dense lysosomal aggregates and lipid vacuoles","Condensation of cytoplasm with apoptotic bodies"],a:1,e:"Early, reversible injury shows generalised swelling and ribosome detachment before any membrane rupture or nuclear fragmentation occurs."},
+{t:'ci',s:'Adaptation',q:"Autopsy of an elderly patient with dementia shows narrowed cerebral gyri and widened sulci. What process explains this?",o:["Increased apoptosis of astrocytes","Coagulative necrosis of cerebral vessels","Chronic hypertrophy of microglial cells","Atrophy of neurons due to reduced stimulation"],a:3,e:"Senile brain atrophy reflects neuronal atrophy and loss from reduced stimulation and blood supply with age, reducing overall organ volume."},
+{t:'ci',s:'Adaptation',q:"Thyroid biopsy shows increased follicular cell NUMBER with normal architecture, no malignancy. What feature best distinguishes this adaptive process from true neoplasia?",o:["Proliferation ceases when the stimulus is removed","High degree of anaplasia and pleomorphism","Tissue invades the surrounding capsule and lymphatics","Involves a mutation causing autonomous growth"],a:0,e:"Hyperplasia is a controlled, reversible response to a stimulus. Proliferation stops once the stimulus is withdrawn, unlike autonomous neoplastic growth."},
+{t:'ci',s:'Cell injury',q:"Which change characteristically occurs during the INITIAL, reversible stage of cell injury?",o:["Karyorrhexis of the nucleus","Rupture of the plasma membrane","Swelling of the endoplasmic reticulum","Lysis of the lysosomes"],a:2,e:"ER swelling is an early, reversible ultrastructural change; the other options represent irreversible or late injury."},
+{t:'ci',s:'Adaptation',q:"Which term describes an increase in organ/tissue size due to increase in the SIZE of individual cells?",o:["Hyperplasia","Hypertrophy","Metaplasia","Neoplasia"],a:1,e:"By definition, hypertrophy means increased cell size, not number."},
+{t:'ci',s:'Cell injury',q:"Which hallmark distinctively separates IRREVERSIBLE from reversible cell injury?",o:["Inability to reverse mitochondrial dysfunction","Direct loss of intracellular glycogen stores","Accumulation of intracellular lipofuscin pigments","Formation of standard cytoplasmic blebs"],a:0,e:"Irreversible mitochondrial dysfunction (permeability transition, failure of oxidative phosphorylation) is the key point of no return."},
+{t:'ci',s:'Cell injury',q:"Which mechanism directly explains why cellular swelling occurs rapidly after an acute ischemic insult?",o:["Inactivation of intracellular caspases","Failure of the sodium-potassium pump","Increased synthesis of ATP","Accelerated efflux of intracellular water"],a:1,e:"ATP depletion makes the Na⁺/K⁺ ATPase pump fail, so Na⁺ and water accumulate inside the cell and it swells."},
+{t:'ci',s:'Accumulations',q:"Which process describes deposition of calcium salts in dead/degenerated tissue with NORMAL serum calcium levels?",o:["Metastatic calcification","Dystrophic calcification","Caseous calcification","Fibrinoid calcification"],a:1,e:"This is the definition of dystrophic calcification. Metastatic calcification occurs with raised serum calcium."},
+{t:'ci',s:'Apoptosis',q:"Which event is the primary 'executioner' phase shared by BOTH intrinsic and extrinsic pathways of apoptosis?",o:["Activation of caspase cascades","Influx of sodium ions","Degradation of glycogen stores","Synthesis of fatty acids"],a:0,e:"Both pathways converge on caspase activation, which executes the final apoptotic changes."},
+{t:'ci',s:'Necrosis',q:"Which necrosis type preserves the basic structural outline of dead tissue for several days?",o:["Liquefactive necrosis","Caseous necrosis","Coagulative necrosis","Fibrinoid necrosis"],a:2,e:"Coagulative necrosis preserves the 'ghost' outline of the tissue because protein denaturation outpaces enzymatic digestion."},
+{t:'ci',s:'Accumulations',q:"Which insoluble, yellowish-brown 'wear-and-tear' pigment accumulates in aging or atrophied cells?",o:["Melanin","Hemosiderin","Lipofuscin","Bilirubin"],a:2,e:"Lipofuscin is the classic age-related pigment, derived from lipid peroxidation of membranes."},
+{t:'ci',s:'Necrosis',q:"Which sequence correctly traces the progressive nuclear changes seen during necrosis?",o:["Pyknosis → karyorrhexis → karyolysis","Karyolysis → pyknosis → karyorrhexis","Karyorrhexis → karyolysis → pyknosis","Pyknosis → karyolysis → karyorrhexis"],a:0,e:"Pyknosis (shrink and condense), then karyorrhexis (fragment), then karyolysis (dissolve)."},
+{t:'ci',s:'Necrosis',q:"Which mammogram finding is most directly caused by fatty acids reacting with calcium during fat necrosis?",o:["Generalized tissue edema","Uniform tissue radiolucency","Scattered microcalcifications","Large fluid-filled cysts"],a:2,e:"Saponification (fatty acid plus calcium) in fat necrosis produces chalky deposits that show as microcalcifications on mammography."},
+{t:'ci',s:'Adaptation',q:"Which adaptation explains why a long-term smoker loses the coordinated ciliary clearing mechanism of the airway?",o:["Atrophy of alveolar smooth muscle","Hyperplasia of connective tissue","Metaplasia of ciliated columnar epithelium","Hypertrophy of superficial squamous cells"],a:2,e:"Squamous metaplasia replaces ciliated epithelium with non-ciliated squamous epithelium, impairing mucociliary clearance."},
+{t:'ci',s:'Apoptosis',q:"Which feature reliably differentiates apoptosis from necrosis?",o:["Cellular fragmentation without a surrounding inflammatory response","Cellular degeneration with massive influx of extracellular fluid","Plasma membrane disintegration with immediate enzyme leakage","Nuclear chromatin condensation without any enzymatic cleavage"],a:0,e:"In apoptosis, apoptotic bodies are phagocytosed without triggering inflammation, unlike necrosis."},
+{t:'ci',s:'Accumulations',q:"Which metabolic disturbance is the crucial trigger initiating intracellular triglyceride accumulation in hepatic steatosis?",o:["Increased utilization of fatty acids due to hyperoxemia","Decreased synthesis of alpha-glycerophosphate in cytosol","Increased synthesis or decreased secretion of lipoproteins","Decreased conversion of fatty acids into cellular cholesterol"],a:2,e:"Fatty liver most often results from an imbalance favouring triglyceride synthesis over lipoprotein export from hepatocytes."},
+
+/* Inflammation (new) */
+{t:'inf',s:'Granulomas',q:"A 54-year-old woman had abdominal surgery two years ago. Ultrasound now shows a small, firm, hypoechoic nodule along the scar. Biopsy shows epithelioid cells and giant cells around refractile material in polarised light, with no necrosis and few lymphocytes. What has formed?",o:["Caseating immune granuloma","Foreign body granuloma","Granulation tissue","Acute abscess"],a:1,e:"Suture or other inert material too large for a macrophage to swallow sets off a foreign body granuloma. No T-cell response is needed, and the material is often seen in the centre, refractile under polarised light."},
+{t:'inf',s:'Granulomas',q:"A 32-year-old man has bilateral hilar lymphadenopathy on chest X-ray. Biopsy of a node shows tight, non-caseating granulomas. The large cells with pink granular cytoplasm and indistinct borders in each granuloma are:",o:["Plasma cells","Neutrophils","Fibroblasts","Activated macrophages (epithelioid cells)"],a:3,e:"Activated macrophages develop abundant pink cytoplasm and come to look like epithelial cells, hence 'epithelioid'. They are the defining cell of a granuloma, here a sarcoid-type non-caseating one."},
+{t:'inf',s:'Granulomas',q:"In pulmonary tuberculosis the bacilli are hard to eradicate, so granulomas keep forming. Which signal mainly activates the macrophages in these immune granulomas?",o:["IFN-γ released by activated Th1 cells","IL-4 released by Th2 cells","Histamine released by mast cells","IgE produced by plasma cells"],a:0,e:"Immune granulomas depend on a persistent T-cell response. Activated Th1 cells secrete IFN-γ, which turns macrophages into epithelioid cells and giant cells."},
+{t:'inf',s:'Granulomas',q:"A cervical lymph node, enlarged on ultrasound, is biopsied. The granulomas contain very large cells, 40 to 50 µm across, each with many nuclei. How are these cells formed?",o:["Division of megakaryocytes","Fusion of lymphocytes","Fusion of activated macrophages","Clumping of tumour cells"],a:2,e:"Langhans giant cells are a large mass of cytoplasm with many nuclei, formed when several activated macrophages fuse."},
+{t:'inf',s:'Systemic effects',q:"A 60-year-old with pneumonia has fever, a white cell count of 18,000/µL and a markedly raised CRP. Which cytokine is chiefly responsible for stimulating the liver to make CRP?",o:["IL-2","IL-6","IL-10","IFN-α"],a:1,e:"Acute-phase proteins (CRP, fibrinogen, serum amyloid A) are made by hepatocytes in response to cytokines, especially IL-6, with IL-1 and TNF also contributing."},
+{t:'inf',s:'Acute vs chronic',q:"A biopsy from a lesion that has been inflamed for several months shows ongoing tissue destruction, new fibrous tissue and a dense cellular infiltrate. Which cells would you expect to dominate?",o:["Neutrophils and fibrin","Eosinophils alone","Platelets and red cells","Macrophages, lymphocytes and plasma cells"],a:3,e:"Chronic inflammation is marked by mononuclear cells (macrophages, lymphocytes, plasma cells), tissue destruction and attempted repair by fibrosis. Neutrophils dominate acute inflammation."},
+
+/* Healing & repair (new) */
+{t:'hr',s:'Regeneration',q:"A 61-year-old man had an anterior wall MI. Cardiac MRI three months later shows a thinned segment of left ventricular wall with late gadolinium enhancement, consistent with scar. Why did this area heal by scarring?",o:["Cardiac myocytes are labile cells that divide continuously","The myocardial framework stayed intact","Cardiac myocytes are permanent cells that have left the cell cycle","Infection prevented regeneration"],a:2,e:"Cardiac muscle is a permanent tissue. Dead myocytes cannot be replaced, so the infarct is repaired by collagen scar, which is what late gadolinium enhancement shows."},
+{t:'hr',s:'Regeneration',q:"After a living-donor right hepatectomy, CT volumetry at three months shows the donor's remaining liver has regrown to near its original volume. What best explains this?",o:["Hepatocytes are stable cells that leave G0 and divide when stimulated","Hepatocytes are permanent cells replaced by fibrous tissue","Hepatocytes are labile cells dividing throughout life","The new volume is mostly granulation tissue"],a:0,e:"Hepatocytes are quiescent (stable) cells. Primed by TNF and IL-6 and driven by HGF and TGF-α, they re-enter the cycle and stop once the original mass is restored."},
+{t:'hr',s:'Scar formation',q:"A leg laceration left open to heal is checked on day 5. The base is red, soft and granular and bleeds when touched. Under the microscope this tissue is made mainly of:",o:["Epithelioid macrophages ringed by lymphocytes","Dense, acellular type I collagen","Regenerated skin appendages","New thin-walled capillaries, fibroblasts and loose oedematous matrix"],a:3,e:"This is granulation tissue: new leaky capillaries, proliferating fibroblasts, loose matrix and macrophages. Option A describes a granuloma, which is a different thing."},
+{t:'hr',s:'Scar formation',q:"Granulation tissue looks swollen and bleeds easily because its new vessels are leaky. Which growth factor is the most important driver of this new vessel formation?",o:["TGF-β","VEGF","HGF","EGF"],a:1,e:"VEGF is the key angiogenic factor and also raises vascular permeability. TGF-β is the main fibrogenic (scar) factor."},
+{t:'hr',s:'Wound healing',q:"A large sacral pressure sore heals by second intention over several weeks. Serial photographs show the defect shrinking to a fraction of its original size. Which cell mainly causes this contraction?",o:["Myofibroblast","Keratinocyte","Neutrophil","Kupffer cell"],a:0,e:"Myofibroblasts are fibroblasts with smooth-muscle actin. They pull the wound edges together, which is prominent in healing by second intention."},
+{t:'hr',s:'Abnormal repair',q:"A 22-year-old has a firm, shiny nodule at an ear-piercing site. It has grown well beyond the original wound and came back after it was excised. What is it?",o:["Hypertrophic scar","Exuberant granulation","Keloid","Wound dehiscence"],a:2,e:"A keloid extends beyond the wound margins, does not regress and tends to recur after excision. A hypertrophic scar stays within the wound and often regresses."},
+
+/* Haemodynamic disorders (new) */
+{t:'hd',s:'Oedema',q:"A 9-year-old boy with nephrotic syndrome has puffy eyelids, pitting ankle oedema and ascites on ultrasound. His serum albumin is very low. What is the main mechanism of his oedema?",o:["Decreased plasma oncotic pressure","Lymphatic obstruction","Increased capillary permeability from inflammation","Raised hydrostatic pressure from venous thrombosis"],a:0,e:"Heavy protein loss in the urine lowers plasma albumin, so plasma oncotic pressure falls and fluid moves into the interstitium and serous cavities. This is generalised renal oedema."},
+{t:'hd',s:'Thrombosis',q:"Four days after hip surgery, a bed-bound woman has a swollen left calf. Doppler ultrasound shows a non-compressible popliteal vein with no flow. Which part of Virchow's triad is chiefly caused by her immobility?",o:["Endothelial injury","Hypercoagulability of blood","Alteration (stasis) of blood flow","Inflammation of the vessel wall"],a:2,e:"Immobility slows venous return from the legs. Stasis lets platelets and clotting factors accumulate against the vessel wall. Surgery adds hypercoagulability, but immobility acts through flow."},
+{t:'hd',s:'Embolism',q:"CT pulmonary angiography in a breathless post-operative patient shows a large filling defect in the right pulmonary artery. Where did this embolus most likely begin?",o:["Left ventricle","Carotid artery plaque","Portal vein","Deep veins of the lower limb"],a:3,e:"Most pulmonary emboli are detached thrombi from deep leg veins, carried through the right heart into the pulmonary arteries. Emboli from the left ventricle or carotids go to the systemic circulation."},
+{t:'hd',s:'Embolism',q:"A 23-year-old motorcyclist with a closed femoral shaft fracture becomes breathless and confused 36 hours later, and petechiae appear over his chest. Which type of embolism is most likely?",o:["Air embolism","Fat embolism","Amniotic fluid embolism","Tumour embolism"],a:1,e:"Fat embolism follows trauma to long bones and soft tissue. Fat globules lodge in the lung and brain microcirculation, typically 1 to 3 days after injury, often with petechiae."},
+{t:'hd',s:'Infarction',q:"On CT, which of these infarcts would you expect to be red (haemorrhagic) rather than pale?",o:["Splenic infarct after arterial embolism","Renal infarct after arterial embolism","Myocardial infarct after coronary thrombosis","Pulmonary infarct after pulmonary embolism"],a:3,e:"Red infarcts occur in loose tissues with a dual or collateral blood supply, such as lung and intestine, and with venous occlusion. Heart, spleen and kidney are solid organs with end arteries and get pale infarcts."},
+{t:'hd',s:'Shock',q:"A 30-year-old is brought in after a road traffic accident. FAST ultrasound shows free fluid around a ruptured spleen. He is pale and cold, pulse 130/min, BP 80/50 mmHg. What type of shock is this?",o:["Hypovolaemic shock","Cardiogenic shock","Septic shock","Neurogenic shock"],a:0,e:"Severe haemorrhage reduces circulating blood volume, so tissue perfusion falls. Cardiogenic shock is pump failure with a normal blood volume."},
+
+/* Immunity (previous quiz) */
+{t:'im',s:'Immune system basics',q:"Which of the following is the primary function of the immune system?",o:["Hormone production","Blood clotting","Protection against infectious agents","Digestion of nutrients"],a:2,e:"The immune system defends the body against pathogens (bacteria, viruses, fungi, parasites) and abnormal cells such as cancer cells. Hormone production is endocrine, clotting is haematological and digestion is gastrointestinal."},
+{t:'im',s:'Types of immunity',q:"Which type of immunity provides a rapid, non-specific response to pathogens?",o:["Adaptive immunity","Humoral immunity","Innate immunity","Cell-mediated immunity"],a:2,e:"Innate immunity is the first line of defence. It acts within minutes to hours, needs no prior exposure and responds the same way to all threats. Adaptive immunity is slower but specific and forms memory."},
+{t:'im',s:'Immune cells',q:"Which cell is primarily responsible for antibody production?",o:["Neutrophil","Plasma cell","Macrophage","Mast cell"],a:1,e:"Plasma cells are differentiated B lymphocytes that secrete large amounts of antibody. Neutrophils and macrophages are phagocytes; mast cells release histamine in allergic reactions."},
+{t:'im',s:'Immunoglobulins',q:"Which immunoglobulin is mainly associated with allergic reactions?",o:["IgA","IgG","IgM","IgE"],a:3,e:"IgE binds mast cells and basophils and drives Type I hypersensitivity. Re-exposure to the allergen triggers degranulation and histamine release."},
+{t:'im',s:'Immunoglobulins',q:"Which immunoglobulin is produced first during a primary immune response?",o:["IgG","IgA","IgM","IgE"],a:2,e:"IgM is the first antibody made against a new antigen. It is a pentamer and a strong complement activator. IgG comes later and dominates the secondary response."},
+{t:'im',s:'Hypersensitivity',q:"Which hypersensitivity reaction is also known as immediate hypersensitivity?",o:["Type I","Type II","Type III","Type IV"],a:0,e:"Type I (IgE-mediated) reactions occur within minutes: allergen cross-links IgE on mast cells, which degranulate. Examples are anaphylaxis, asthma, hay fever and food allergy."},
+{t:'im',s:'Hypersensitivity',q:"Bronchial asthma is commonly associated with which hypersensitivity reaction?",o:["Type I","Type II","Type III","Type IV"],a:0,e:"Asthma is a classic Type I reaction. Mediators from mast cells in the bronchial mucosa cause bronchoconstriction, mucus and airway oedema. A chest X-ray in an acute attack may show hyperinflation."},
+{t:'im',s:'Hypersensitivity',q:"Which hypersensitivity reaction is mediated by immune complex deposition?",o:["Type I","Type II","Type III","Type IV"],a:2,e:"In Type III reactions antigen-antibody complexes deposit in tissues, activate complement and cause inflammation. Examples: SLE, post-streptococcal glomerulonephritis, serum sickness."},
+{t:'im',s:'Hypersensitivity',q:"Which of the following diseases is an example of Type IV (delayed) hypersensitivity?",o:["Asthma","Myasthenia gravis","Contact dermatitis","Graves disease"],a:2,e:"Type IV is T-cell mediated and appears 48 to 72 hours after exposure. Contact dermatitis (nickel, latex) is the classic example. Asthma is Type I; myasthenia gravis and Graves disease are Type II."},
+{t:'im',s:'Hypersensitivity',q:"Type II hypersensitivity is mediated by which mechanism?",o:["IgE binding to mast cells","Antibodies (IgG/IgM) directed against cell-surface or tissue antigens","Immune complex deposition in vessel walls","T-cell activation and cytokine release"],a:1,e:"IgG or IgM binds antigens on cell surfaces or matrix, leading to complement activation, phagocytosis or ADCC. Examples: autoimmune haemolytic anaemia, Graves disease, myasthenia gravis."},
+{t:'im',s:'Imaging & autoimmune',q:"Which imaging modality is most useful for evaluating interstitial lung disease in scleroderma?",o:["Plain X-ray","Ultrasound","HRCT chest","Mammography"],a:2,e:"HRCT is the standard for detecting and characterising ILD. In systemic sclerosis it shows basal ground-glass, reticulation, traction bronchiectasis and, later, honeycombing. Plain films miss early disease."},
+{t:'im',s:'Imaging & autoimmune',q:"Which autoimmune disease commonly shows joint space narrowing and bone erosions on hand X-ray?",o:["Systemic lupus erythematosus","Rheumatoid arthritis","Graves disease","Myasthenia gravis"],a:1,e:"RA causes symmetrical joint space narrowing from cartilage loss and marginal erosions from pannus, mostly at MCP, PIP and wrist joints. SLE arthritis is non-erosive."},
+{t:'im',s:'Imaging & autoimmune',q:"Which radiological finding is most characteristic of systemic sclerosis affecting the oesophagus on barium swallow?",o:["Oesophageal stricture","Dilated, aperistaltic oesophagus","Mucosal nodularity","Air-fluid level"],a:1,e:"Fibrosis and smooth muscle loss in the lower two-thirds of the oesophagus leave it dilated and without peristalsis. Reflux and aspiration are common."},
+{t:'im',s:'Imaging & autoimmune',q:"In a patient with suspected Graves disease, which imaging study best evaluates thyroid size and vascularity?",o:["CT neck with contrast","MRI neck","Thyroid ultrasound with Doppler","Plain X-ray neck"],a:2,e:"Ultrasound with Doppler shows a diffusely enlarged gland with markedly increased flow (the 'thyroid inferno'). It is quick, cheap and uses no radiation."},
+{t:'im',s:'Clinical vignette',q:"A 35-year-old woman presents with bilateral hand pain and morning stiffness lasting more than one hour. Hand X-ray shows joint space narrowing and marginal erosions. What is the most likely diagnosis?",o:["Osteoarthritis","Rheumatoid arthritis","Gout","Septic arthritis"],a:1,e:"Symmetrical joints, morning stiffness over an hour and marginal erosions point to RA. Osteoarthritis gives osteophytes and sclerosis; gout gives punched-out erosions; septic arthritis is usually one acute joint."},
+{t:'im',s:'Clinical vignette',q:"A patient develops sudden wheezing, bronchospasm, and urticaria minutes after receiving a penicillin injection. Which type of hypersensitivity reaction is most likely?",o:["Type I","Type II","Type III","Type IV"],a:0,e:"This is anaphylaxis, a Type I reaction. Earlier sensitisation produced IgE against penicillin; re-exposure causes rapid mast cell degranulation. Immediate IM adrenaline is the treatment."},
+{t:'im',s:'Clinical vignette',q:"A 28-year-old woman presents with butterfly facial rash, fever, and joint pain. Chest imaging reveals pleural effusion. Which autoimmune disease is most likely?",o:["Rheumatoid arthritis","Systemic lupus erythematosus","Scleroderma","Myasthenia gravis"],a:1,e:"Malar rash, fever, arthritis and serositis (pleural effusion) are classic SLE, an immune complex disease. Pleural and pericardial effusions are common on imaging."},
+{t:'im',s:'Clinical vignette',q:"HRCT chest demonstrates diffuse interstitial fibrosis and honeycombing in a patient with autoimmune disease. A CT-guided biopsy is planned. Which disease is most consistent with these findings?",o:["Graves disease","Scleroderma","Asthma","Myasthenia gravis"],a:1,e:"Systemic sclerosis is the autoimmune disease most linked to ILD, with lower-lobe ground-glass, reticulation and honeycombing."},
+{t:'im',s:'Clinical vignette',q:"A patient presents with ptosis and muscle weakness that worsens throughout the day. CT chest shows thymic enlargement. Which condition is most likely?",o:["Multiple sclerosis","Graves disease","Myasthenia gravis","Rheumatoid arthritis"],a:2,e:"Myasthenia gravis is a Type II disease with antibodies against acetylcholine receptors, causing fatigable weakness and ptosis. Many patients have thymic hyperplasia or a thymoma, so CT chest is part of the work-up."},
+{t:'im',s:'Clinical vignette',q:"A 42-year-old man with ankylosing spondylitis presents with progressive back stiffness. X-ray of the spine shows a 'bamboo spine' appearance. Which finding best explains this?",o:["Lytic vertebral lesions","Syndesmophyte formation fusing adjacent vertebrae","Anterior vertebral scalloping","Posterior disc herniation"],a:1,e:"Syndesmophytes are bony bridges along the disc margins that fuse vertebrae, giving the bamboo appearance. Ankylosing spondylitis is HLA-B27 associated; sacroiliitis is an early sign."},
+/* Immunity (new) */
+{t:'im',s:'MHC',q:"Hepatocytes infected with hepatitis B virus are killed by CD8+ cytotoxic T cells. On which molecule do these T cells recognise the viral peptides?",o:["MHC class II on macrophages","MHC class I on the infected cell","IgE bound to mast cells","Complement C3b on the cell surface"],a:1,e:"MHC class I is found on all nucleated cells and presents internal (for example viral) peptides to CD8+ T cells. MHC class II is on antigen-presenting cells and presents to CD4+ T cells."},
+{t:'im',s:'Immune cells',q:"After a vaccine is injected into the skin, which cell captures the antigen, carries it to the regional lymph node and is the most potent activator of naïve T cells?",o:["Neutrophil","Mast cell","Dendritic (Langerhans) cell","Plasma cell"],a:2,e:"Dendritic cells are the most potent antigen-presenting cells and bridge innate and adaptive immunity. In the skin they are called Langerhans cells."},
+{t:'im',s:'Immune cells',q:"Which cell can kill virus-infected and tumour cells without prior sensitisation, using perforin and granzymes?",o:["Natural killer cell","CD4+ helper T cell","B lymphocyte","Eosinophil"],a:0,e:"NK cells are large granular lymphocytes of the innate system. They need no antigen presentation or sensitisation and also release IFN-γ to activate macrophages."},
+{t:'im',s:'Hypersensitivity',q:"An Rh-negative woman in her second pregnancy has an obstetric ultrasound showing a hydropic fetus with ascites and skin oedema. Her first baby was Rh-positive. What is destroying the fetal red cells?",o:["Maternal IgE acting on fetal mast cells","Immune complexes depositing in the placenta","Maternal T cells crossing into the fetus","Maternal IgG anti-D crossing the placenta and binding fetal red cells"],a:3,e:"Haemolytic disease of the newborn is a Type II reaction. The mother was sensitised in her first pregnancy; her IgG anti-D crosses the placenta and coats fetal red cells, which are destroyed. Severe anaemia leads to hydrops."},
+{t:'im',s:'Hypersensitivity',q:"A medical imaging student has a Mantoux test before clinical placement. At 72 hours there is 15 mm of induration at the injection site. What mediates this reaction?",o:["IgE on mast cells","Sensitised T lymphocytes recruiting macrophages","Complement-fixing IgM","Circulating immune complexes"],a:1,e:"The tuberculin reaction is Type IV (delayed). Sensitised CD4+ Th1 cells recognise PPD and recruit and activate macrophages, producing induration at 48 to 72 hours."},
+{t:'im',s:'Autoimmune disease',q:"A 27-year-old woman with SLE has proteinuria. Renal ultrasound shows increased cortical echogenicity and reduced corticomedullary differentiation. What mainly causes her kidney damage?",o:["Antibodies against the glomerular basement membrane","IgE-mediated mast cell degranulation","Deposition of DNA–anti-DNA immune complexes","Direct killing by NK cells"],a:2,e:"Lupus nephritis is driven by Type III injury: DNA-anti-DNA complexes deposit in glomeruli and activate complement. Anti-GBM antibodies (Type II) cause Goodpasture syndrome."}
+];
+
+/* ---------- Short answer questions ---------- */
+const SAQ=[
+{t:'inf',m:4,q:"Compare acute and chronic inflammation under these headings: duration, main cells, typical causes and outcome.",a:`<table><tr><th></th><th>Acute</th><th>Chronic</th></tr>
+<tr><td>Duration</td><td>Minutes to days</td><td>Weeks to months or years</td></tr>
+<tr><td>Main cells</td><td>Neutrophils</td><td>Macrophages, lymphocytes, plasma cells</td></tr>
+<tr><td>Causes</td><td>Bacterial infection, trauma, necrosis</td><td>Persistent infection (e.g. TB), long exposure to toxins, autoimmunity</td></tr>
+<tr><td>Outcome</td><td>Resolution, abscess, or progression to chronic</td><td>Tissue destruction with fibrosis; granulomas in some causes</td></tr></table><p class="note">1 mark per heading.</p>`},
+{t:'inf',m:6,q:"Define granulomatous inflammation. Name the two types of granuloma, and describe the microscopic appearance of a tuberculous granuloma.",a:`<ul><li><b>Definition (1):</b> a form of chronic inflammation with collections of activated macrophages (epithelioid cells), often with T lymphocytes and sometimes necrosis; an attempt to wall off an agent that is hard to eradicate.</li>
+<li><b>Types (2):</b> foreign body granuloma (inert material such as talc or sutures, no T-cell response) and immune granuloma (persistent T-cell response, e.g. TB, with IFN-γ from Th1 cells activating macrophages).</li>
+<li><b>TB granuloma (3):</b> central caseous necrosis (amorphous, eosinophilic, granular debris); surrounding epithelioid cells with pink cytoplasm and indistinct borders; Langhans giant cells with many nuclei; a collar of lymphocytes; a rim of fibroblasts in older lesions.</li></ul>`},
+{t:'inf',m:5,q:"What is the acute-phase response? List four of its features and name the main cytokines involved.",a:`<ul><li><b>Definition (1):</b> the cytokine-driven systemic reaction to inflammation, even when the inflammation is localised.</li>
+<li><b>Cytokines (1):</b> TNF, IL-1 and IL-6 (interferons also contribute).</li>
+<li><b>Features (any 4, 3 marks):</b> fever of 1 to 4 °C (pyrogens: bacterial products, TNF, IL-1); raised acute-phase proteins from the liver (CRP, fibrinogen, serum amyloid A); leukocytosis, usually neutrophilia in bacterial infection; raised pulse and blood pressure; rigors, chills, anorexia, somnolence and malaise.</li></ul>`},
+
+{t:'hr',m:6,q:"Classify body tissues by their capacity to proliferate. Give two examples of each class and state how each heals after injury.",a:`<table><tr><th>Class</th><th>Examples</th><th>Healing</th></tr>
+<tr><td>Labile (continuously dividing)</td><td>Skin and GIT epithelium, bone marrow</td><td>Regenerate readily if stem cells survive</td></tr>
+<tr><td>Stable (quiescent, in G0)</td><td>Liver, kidney, fibroblasts, endothelium</td><td>Regenerate if the ECM framework is intact; otherwise scar</td></tr>
+<tr><td>Permanent (non-dividing)</td><td>Neurons, cardiac muscle</td><td>Scar (gliosis in the CNS)</td></tr></table><p class="note">1 mark for each class with examples, 1 for each healing statement.</p>`},
+{t:'hr',m:6,q:"Compare healing by first and second intention. How strong is a skin wound at one week, one month and three months?",a:`<table><tr><th>Feature</th><th>First intention</th><th>Second intention</th></tr>
+<tr><td>Wound</td><td>Clean, edges apposed (sutured incision)</td><td>Large gap (ulcer, abscess, burn)</td></tr>
+<tr><td>Inflammation</td><td>Mild</td><td>Intense</td></tr>
+<tr><td>Granulation tissue</td><td>Scanty</td><td>Abundant, fills from the base</td></tr>
+<tr><td>Contraction</td><td>Minimal</td><td>Prominent (myofibroblasts)</td></tr>
+<tr><td>Scar</td><td>Thin, linear</td><td>Broad, contracted</td></tr></table>
+<ul><li><b>Strength (1.5):</b> about 10% at one week (suture removal), about 40% at one month, about 70 to 80% by three months, and it never returns to 100%.</li></ul>`},
+{t:'hr',m:6,q:"A diabetic patient's foot ulcer has not healed after six weeks, and an X-ray shows a retained glass fragment. List three local and three systemic factors that delay wound healing.",a:`<ul><li><b>Local (3):</b> infection (the most important), foreign body such as glass or sutures, poor blood supply, mechanical movement at the site, previous radiation, site and size of the wound.</li>
+<li><b>Systemic (3):</b> diabetes mellitus (ischaemia, neuropathy, infection), protein, vitamin C or zinc deficiency, glucocorticoids, older age, poor general health (cancer, renal failure, anaemia).</li></ul><p class="note">1 mark each, any three from each list.</p>`},
+
+{t:'hd',m:6,q:"Define oedema. List the mechanisms that cause it, giving one clinical example for each.",a:`<ul><li><b>Definition (1):</b> abnormal, excessive accumulation of fluid in the interstitial spaces and serous cavities.</li>
+<li><b>Mechanisms (5):</b> decreased plasma oncotic pressure (nephrotic syndrome, cirrhosis, malnutrition); increased capillary hydrostatic pressure (heart failure, DVT); lymphatic obstruction (tumour, filariasis, post-surgical); increased capillary permeability (inflammation, allergy); sodium and water retention (renal failure); tissue factors.</li></ul>`},
+{t:'hd',m:6,q:"Define thrombosis. Explain Virchow's triad and list the possible fates of a thrombus.",a:`<ul><li><b>Definition (1):</b> formation of a solid mass from the constituents of flowing blood within the cardiovascular system; the mass is a thrombus.</li>
+<li><b>Virchow's triad (3):</b> endothelial injury (atherosclerosis, MI, vasculitis); alteration of blood flow, stasis or turbulence (immobility, varicose veins, aneurysm); hypercoagulability (antithrombin, protein C or S deficiency, pregnancy, oral contraceptives, cancer).</li>
+<li><b>Fates (2):</b> resolution, organisation (with recanalisation), propagation, thromboembolism.</li></ul>`},
+{t:'hd',m:6,q:"Define shock. Classify it, with one cause for each type, and name the three stages.",a:`<ul><li><b>Definition (1):</b> cardiovascular collapse with an acute fall in effective circulating blood volume and inadequate perfusion of cells and tissues, ending in hypotension and cellular hypoxia.</li>
+<li><b>Types (3):</b> hypovolaemic (haemorrhage, burns, vomiting and diarrhoea); cardiogenic (MI, arrhythmia, tamponade, massive PE); septic (Gram-negative septicaemia); also neurogenic (spinal cord injury, anaesthesia) and anaphylactic.</li>
+<li><b>Stages (2):</b> non-progressive (compensated, reversible); progressive (decompensated); irreversible.</li></ul>`},
+
+{t:'im',m:8,q:"Compare the four types of hypersensitivity reaction. For each, give the mediator, the time of onset and one example.",a:`<table><tr><th>Type</th><th>Mediator</th><th>Onset</th><th>Example</th></tr>
+<tr><td>I Immediate</td><td>IgE on mast cells</td><td>Minutes</td><td>Anaphylaxis, asthma, hay fever</td></tr>
+<tr><td>II Cytotoxic</td><td>IgG/IgM against cell-surface antigen, complement</td><td>Minutes to hours</td><td>ABO transfusion reaction, HDN, myasthenia gravis</td></tr>
+<tr><td>III Immune complex</td><td>IgG complexes, complement, neutrophils</td><td>3 to 8 hours</td><td>SLE, serum sickness, Arthus reaction</td></tr>
+<tr><td>IV Delayed</td><td>T lymphocytes, macrophages</td><td>48 to 72 hours</td><td>Contact dermatitis, Mantoux test</td></tr></table><p class="note">2 marks per type.</p>`},
+{t:'im',m:4,q:"Compare innate and adaptive immunity under four headings.",a:`<table><tr><th></th><th>Innate</th><th>Adaptive</th></tr>
+<tr><td>Speed</td><td>Minutes, always ready</td><td>Days on first exposure, faster on re-exposure</td></tr>
+<tr><td>Specificity</td><td>Non-specific</td><td>Antigen-specific</td></tr>
+<tr><td>Memory</td><td>None</td><td>Immunological memory</td></tr>
+<tr><td>Components</td><td>Skin, mucosa, phagocytes, NK cells, complement</td><td>T and B lymphocytes, antibodies</td></tr></table>`},
+{t:'im',m:5,q:"Describe the role of medical imaging in autoimmune disease, giving one example for each role.",a:`<ul><li><b>Detection:</b> finding organ involvement not yet clinical, e.g. early RA erosions or bone marrow oedema on MRI, silent lupus nephritis on renal ultrasound.</li>
+<li><b>Severity:</b> grading extent, e.g. HRCT scoring of ILD in scleroderma.</li>
+<li><b>Complications:</b> e.g. pulmonary embolism in SLE with antiphospholipid syndrome, atlantoaxial subluxation in RA, pulmonary hypertension.</li>
+<li><b>Monitoring:</b> serial imaging to track progression and response to treatment.</li>
+<li><b>Guided procedures:</b> ultrasound or CT-guided biopsy, joint aspiration, intra-articular steroid injection.</li></ul><p class="note">1 mark per role with example.</p>`}
+];
+
+/* ---------- Flashcards ---------- */
+const FC=[
+{t:'ci',f:"Atrophy",b:"Decrease in the size of cells or an organ due to reduced workload, blood supply, nutrition or stimulation. The cells shrink but are still alive."},
+{t:'ci',f:"Hypertrophy",b:"Increase in the size of individual cells, so the organ enlarges with no new cells. Classic example: left ventricular hypertrophy in hypertension."},
+{t:'ci',f:"Hyperplasia",b:"Increase in the number of cells in a tissue, usually in response to a stimulus. Reversible: it stops when the stimulus is removed. E.g. the uterus in pregnancy (with hypertrophy)."},
+{t:'ci',f:"Metaplasia",b:"Reversible replacement of one mature cell type by another in response to chronic irritation. E.g. Barrett's oesophagus (squamous to columnar); smoker's airway (ciliated columnar to squamous)."},
+{t:'ci',f:"Dysplasia",b:"Disordered, atypical cell growth. Not a true adaptation; a pre-neoplastic change, distinct from metaplasia."},
+{t:'ci',f:"Reversible cell injury: key feature",b:"The earliest change is cell and organelle swelling (ER swelling, ribosome detachment) from Na⁺/K⁺ pump failure after ATP depletion. The cell can recover if the stimulus is removed."},
+{t:'ci',f:"Irreversible cell injury: key feature",b:"Inability to reverse mitochondrial dysfunction and/or severe plasma membrane damage, the point of no return leading to cell death."},
+{t:'ci',f:"Why does swelling occur after ischaemia?",b:"ATP falls, the Na⁺/K⁺ pump fails, Na⁺ and water accumulate inside the cell, so the cell and its organelles swell (hydropic change)."},
+{t:'ci',f:"Coagulative necrosis",b:"Protein denaturation dominates over enzymatic digestion, so the tissue's ghost outline is kept for days. Typical of infarcts in solid organs (heart, kidney, spleen) and dry gangrene, but not the brain."},
+{t:'ci',f:"Liquefactive necrosis",b:"Enzymatic digestion dominates and the dead tissue becomes a viscous liquid. Classic in brain infarcts and bacterial abscesses."},
+{t:'ci',f:"Caseous necrosis",b:"Combines features of coagulative and liquefactive necrosis; cheese-like, friable and white. Classic for tuberculous granulomas."},
+{t:'ci',f:"Fat necrosis",b:"Enzymatic destruction of fat (e.g. lipase in acute pancreatitis) releases fatty acids that bind calcium (saponification), giving chalky white areas; may appear as microcalcifications on mammography."},
+{t:'ci',f:"Fibrinoid necrosis",b:"Immune complexes and fibrin deposited in vessel walls, seen in immune vasculitis and malignant hypertension."},
+{t:'ci',f:"Nuclear changes in necrosis (order)",b:"Pyknosis (shrinkage, condensation), then karyorrhexis (fragmentation), then karyolysis (dissolution)."},
+{t:'ci',f:"Apoptosis vs necrosis",b:"Apoptosis: programmed, energy-dependent, apoptotic bodies, no inflammation. Necrosis: pathological, membrane rupture and leakage of contents, triggers inflammation."},
+{t:'ci',f:"Caspase cascade",b:"The executioner pathway shared by both the intrinsic (mitochondrial) and extrinsic (death receptor) pathways of apoptosis."},
+{t:'ci',f:"Dystrophic calcification",b:"Calcium deposited in dead or degenerating tissue with normal serum calcium, e.g. atherosclerotic plaques, old TB lesions, damaged heart valves."},
+{t:'ci',f:"Metastatic calcification",b:"Calcium deposited in normal tissue because serum calcium is raised, e.g. hyperparathyroidism or renal failure."},
+{t:'ci',f:"Lipofuscin",b:"Insoluble yellow-brown wear-and-tear pigment in ageing or atrophic cells, a product of lipid peroxidation. Not harmful in itself."},
+{t:'ci',f:"Hepatic steatosis: key trigger",b:"Triglycerides build up in hepatocytes mainly because of increased synthesis or decreased secretion of lipoproteins."},
+{t:'inf',f:"Granulomatous inflammation",b:"Chronic inflammation with collections of activated macrophages (epithelioid cells), often with T cells and sometimes necrosis. An attempt to contain an agent that is hard to eradicate."},
+{t:'inf',f:"Epithelioid cell",b:"An activated macrophage with abundant pink granular cytoplasm and indistinct borders, resembling an epithelial cell."},
+{t:'inf',f:"Langhans giant cell",b:"Multinucleated cell 40 to 50 µm across, formed by fusion of activated macrophages. Typical of tuberculous granulomas."},
+{t:'inf',f:"Foreign body vs immune granuloma",b:"Foreign body: around inert material (talc, sutures), no T-cell response, material often refractile in polarised light. Immune: persistent T-cell response (TB), Th1 cells release IFN-γ."},
+{t:'inf',f:"Acute-phase proteins",b:"CRP, fibrinogen and serum amyloid A, made by the liver under the influence of IL-6, IL-1 and TNF."},
+{t:'hr',f:"Regeneration vs scar formation",b:"Regeneration replaces lost cells with the same type and restores function. Scar formation fills the defect with collagen; it gives strength but specialised function is lost."},
+{t:'hr',f:"Granulation tissue",b:"New thin-walled capillaries, fibroblasts, loose oedematous matrix and macrophages. Red, soft, granular, bleeds on touch; from about day 3 to 5. Not the same as a granuloma."},
+{t:'hr',f:"VEGF vs TGF-β",b:"VEGF drives new vessels (angiogenesis) and leakiness. TGF-β is the key fibrogenic factor that drives collagen and scar."},
+{t:'hr',f:"Myofibroblast",b:"A fibroblast with contractile smooth-muscle actin. Pulls wound edges together, mainly in healing by second intention."},
+{t:'hr',f:"Keloid vs hypertrophic scar",b:"Hypertrophic scar stays within the wound and often regresses. Keloid grows beyond the margins, does not regress and recurs after excision."},
+{t:'hd',f:"Oedema",b:"Abnormal, excessive fluid in the interstitial spaces and serous cavities (ascites, pleural effusion, pericardial effusion)."},
+{t:'hd',f:"Virchow's triad",b:"Endothelial injury, alteration of blood flow (stasis or turbulence), and hypercoagulability of the blood."},
+{t:'hd',f:"Embolus",b:"A detached solid, liquid or gaseous mass carried in the blood to a site distant from its origin. About 99% are thromboemboli."},
+{t:'hd',f:"Pale vs red infarct",b:"Pale: arterial occlusion in solid organs (heart, spleen, kidney). Red: venous occlusion or loose tissue with dual supply (lung, intestine)."},
+{t:'hd',f:"Shock",b:"Cardiovascular collapse with reduced effective circulating volume and poor tissue perfusion. Types: hypovolaemic, cardiogenic, septic, plus neurogenic and anaphylactic."},
+{t:'im',f:"Innate vs adaptive immunity",b:"Innate: immediate, non-specific, no memory. Adaptive: slower first time, antigen-specific, forms memory."},
+{t:'im',f:"MHC class I vs class II",b:"Class I: all nucleated cells, presents to CD8+ T cells. Class II: antigen-presenting cells, presents to CD4+ T cells."},
+{t:'im',f:"NK cells",b:"Innate large granular lymphocytes that kill virus-infected and tumour cells without sensitisation, using perforin and granzymes."},
+{t:'im',f:"Gell and Coombs types",b:"I: IgE, minutes. II: IgG/IgM against cells, hours. III: immune complexes, 3 to 8 h. IV: T cells, 48 to 72 h."},
+{t:'im',f:"Autoimmune disease",b:"Failure of self-tolerance (central or peripheral), so lymphocytes attack self-antigens. Organ-specific (Hashimoto, type 1 DM) or systemic (SLE, RA, scleroderma)."}
+];
+
+/* ---------- Key points ---------- */
+const KP=[
+{t:'ci',h:"Cellular adaptations",p:["Atrophy = smaller cells; hypertrophy = bigger cells; hyperplasia = more cells.","Metaplasia = one mature cell type replaced by another, reversible, due to chronic irritation.","Dysplasia is disordered, pre-neoplastic growth, not a normal adaptation.","The pregnant uterus grows by hypertrophy and hyperplasia together."]},
+{t:'ci',h:"Reversible vs irreversible injury",p:["Early: ATP falls, the Na⁺/K⁺ pump fails, cells and ER swell, ribosomes detach.","Point of no return: lasting mitochondrial dysfunction and/or plasma membrane rupture.","Enzymes such as troponin and CK leak into blood only after membrane damage.","Sustained calcium influx activates destructive enzymes."]},
+{t:'ci',h:"Necrosis and apoptosis",p:["Coagulative: outline preserved; solid-organ infarcts, brain excepted.","Liquefactive: brain infarcts and abscesses. Caseous: TB. Fat: saponification, microcalcifications on mammography. Fibrinoid: vessel walls.","Nuclear order: pyknosis, karyorrhexis, karyolysis.","Apoptosis is programmed with no inflammation; both pathways converge on caspases."]},
+{t:'ci',h:"Calcification, pigments and imaging",p:["Dystrophic calcification: dead tissue, normal serum calcium (plaques, old TB foci, damaged valves).","Metastatic calcification: normal tissue, raised serum calcium.","Lipofuscin is the wear-and-tear pigment; steatosis comes from more triglyceride synthesis or less lipoprotein export.","Senile brain atrophy shows narrow gyri and wide sulci on CT/MRI."]},
+{t:'inf',h:"Chronic and granulomatous inflammation",p:["Acute inflammation is neutrophil-led; chronic is led by macrophages, lymphocytes and plasma cells, with destruction and fibrosis.","A granuloma is a collection of epithelioid macrophages, often with giant cells and a lymphocyte collar.","Foreign body granulomas need no T cells; immune granulomas depend on Th1 cells and IFN-γ.","TB is the prototype: caseating granuloma (tubercle) with Langhans giant cells. Sarcoid, Crohn and foreign body granulomas are non-caseating.","Acute-phase response: fever, CRP and fibrinogen, leukocytosis; driven by TNF, IL-1 and IL-6."]},
+{t:'hr',h:"Healing and repair",p:["Whether tissue regenerates depends on cell type (labile, stable, permanent) and an intact ECM framework.","Scar sequence: inflammation, angiogenesis, granulation tissue, collagen, remodelling.","VEGF builds vessels; TGF-β builds scar. Collagen synthesis needs vitamin C and zinc.","First intention: neat, little scar. Second intention: more granulation and contraction by myofibroblasts.","Infection is the main cause of delay. Too little scar: dehiscence, ulcers. Too much: keloid, contracture, organ fibrosis."]},
+{t:'hd',h:"Haemodynamic disorders",p:["Oedema arises from low oncotic pressure, high hydrostatic pressure, lymphatic block, leaky capillaries or salt and water retention.","Hyperaemia is active (inflow); congestion is passive (impaired venous outflow) and makes tissue blue.","Virchow's triad: endothelial injury, abnormal flow, hypercoagulability. Fates: resolution, organisation, propagation, embolism.","Most emboli are thrombi; pulmonary emboli come from leg veins; fat emboli follow long-bone fractures.","Pale infarcts in solid organs, red infarcts in lung and gut. Shock: hypovolaemic, cardiogenic, septic; three stages."]},
+{t:'im',h:"Immunity",p:["Innate is fast and non-specific; adaptive is specific with memory.","T cells mature in the thymus (CD4 helpers, CD8 killers, Tregs); B cells become plasma cells; NK cells kill without sensitisation; dendritic cells are the best APCs.","MHC I presents to CD8, MHC II to CD4. HLA typing matters for transplants; HLA-B27 links to ankylosing spondylitis.","Hypersensitivity: I IgE, II antibody to cells, III immune complexes, IV T cells.","Imaging: SLE gives effusions and non-erosive arthritis; RA gives periarticular osteopenia, erosions, narrowing; scleroderma gives basal ILD on HRCT and an atonic oesophagus."]}
+];
+
+/* ---------- state ---------- */
+const L=['A','B','C','D'];
+let topic='all',view='mcq',order=[],qi=0,ans={},fi=0,flip=false,fcs={},shuffled=false,showRev=false;
+const store={get(k,d){try{const v=localStorage.getItem('bmi_rev_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('bmi_rev_'+k,JSON.stringify(v))}catch(e){}}};
+fcs=store.get('fc',{});let drafts=store.get('drafts',{});
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const inT=x=>topic==='all'||x.t===topic;
+const V=document.getElementById('view');
+
+function buildOrder(){
+  order=MCQ.map((q,i)=>i).filter(i=>inT(MCQ[i]));
+  if(shuffled){for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}}
+  qi=0;ans={};showRev=false;
+}
+
+function stats(){
+  document.getElementById('stats').innerHTML=`<span><b>${MCQ.length}</b>MCQs</span><span><b>${SAQ.length}</b>short-answer questions</span><span><b>${FC.length}</b>flashcards</span><span><b>${TOPICS.length}</b>topics</span>`;
+}
+function chips(){
+  const c=k=>k==='all'?MCQ.length:MCQ.filter(q=>q.t===k).length;
+  document.getElementById('chips').innerHTML=[{id:'all',n:'All topics'},...TOPICS].map(t=>`<button class="chip ${topic===t.id?'on':''}" data-t="${t.id}" aria-pressed="${topic===t.id}">${t.n}<small>${c(t.id)}</small></button>`).join('');
+}
+
+function mcq(){
+  if(!order.length){V.innerHTML='<div class="card">No questions for this topic.</div>';return}
+  if(qi>=order.length){return results()}
+  const q=MCQ[order[qi]],a=ans[order[qi]],done=a!==undefined;
+  const score=Object.entries(ans).filter(([i,v])=>MCQ[i].a===v).length,n=Object.keys(ans).length;
+  V.innerHTML=`<div class="card">
+   <div class="meta"><span>Question ${qi+1} of ${order.length}</span><span>Score ${score} / ${n}</span></div>
+   <div class="bar"><i style="width:${qi/order.length*100}%"></i></div>
+   <span class="tag">${esc(TN[q.t])} · ${esc(q.s)}</span>
+   <p class="q">${esc(q.q)}</p>
+   <div>${q.o.map((o,i)=>{let c='opt';if(done){c+=i===q.a?' ok':i===a?' no':' dim'}return `<button class="${c}" data-o="${i}" ${done?'disabled':''}><span class="l">${L[i]}</span><span>${esc(o)}</span></button>`}).join('')}</div>
+   ${done?`<div class="exp"><b>${a===q.a?'Correct.':'Not quite. The answer is '+L[q.a]+'.'}</b>${esc(q.e)}</div>`:''}
+   <div class="row"><button class="btn ghost" id="prev" ${qi===0?'disabled':''}>Previous</button><span class="grow"></span>
+   <button class="btn ghost" id="shuf">${shuffled?'Shuffled: restart in order':'Shuffle and restart'}</button>
+   <button class="btn" id="next" ${done?'':'disabled'}>${qi===order.length-1?'See results':'Next'}</button></div></div>`;
+}
+function results(){
+  const tot=order.length,ok=order.filter(i=>ans[i]===MCQ[i].a).length;
+  const by=TOPICS.map(t=>{const ids=order.filter(i=>MCQ[i].t===t.id);return{t,n:ids.length,ok:ids.filter(i=>ans[i]===MCQ[i].a).length}}).filter(x=>x.n);
+  V.innerHTML=`<div class="card"><div class="big">${ok} / ${tot}</div><p>${Math.round(ok/tot*100)}% correct. ${ok/tot>=.8?'Well done.':ok/tot>=.6?'Good, now go back over the ones you missed.':'Worth another round after reading the key points.'}</p>
+   ${by.map(x=>`<div class="tbar"><span>${esc(x.t.n)}</span><span class="t"><i style="width:${x.ok/x.n*100}%"></i></span><span>${x.ok} / ${x.n}</span></div>`).join('')}
+   <div class="row"><button class="btn" id="again">Try again</button><button class="btn ghost" id="rev">${showRev?'Hide review':'Review answers'}</button></div>
+   ${showRev?order.map((i,k)=>{const q=MCQ[i],r=ans[i]===q.a;return `<div class="rev"><span class="mk ${r?'ok':'no'}">${k+1}. ${r?'Correct':'Wrong'}</span> ${esc(q.q)}<br><b>Answer ${L[q.a]}:</b> ${esc(q.o[q.a])}${r?'':` <span class="no">(you chose ${L[ans[i]]})</span>`}</div>`}).join(''):''}</div>`;
+}
+
+function saq(){
+  const list=SAQ.map((s,i)=>({...s,i})).filter(inT);
+  if(!list.length){V.innerHTML='<div class="card">There are no short-answer questions for this topic yet. Try MCQs or flashcards.</div>';return}
+  V.innerHTML=`<p class="note">Write your answer first, then open the model answer to mark yourself. Your drafts stay in this browser.</p>`+list.map((s,k)=>`<div class="card saq">
+   <div class="meta"><span class="tag">${esc(TN[s.t])}</span><span class="marks">${s.m} marks</span></div>
+   <h3>${k+1}. ${esc(s.q)}</h3>
+   <textarea data-d="${s.i}" aria-label="Your answer" placeholder="Your answer">${esc(drafts[s.i]||'')}</textarea>
+   <div class="row"><button class="btn ghost" data-s="${s.i}">Show model answer</button></div>
+   <div class="ans" id="ans${s.i}" hidden>${s.a}</div></div>`).join('');
+}
+
+function fc(){
+  const list=FC.map((c,i)=>({...c,i})).filter(inT);
+  if(fi>=list.length)fi=0;
+  const c=list[fi];
+  V.innerHTML=`<div class="meta"><span>Card ${fi+1} of ${list.length} · ${esc(TN[c.t])}</span><button class="btn ghost" id="fcreset" style="min-height:36px;padding:4px 12px">Reset progress</button></div>
+   <div class="flip"><button class="fc ${flip?'f':''}" id="card" aria-label="Flip card">
+    <div class="face"><small>Term</small><div class="term">${esc(c.f)}</div><div class="hint">Tap to see the answer</div></div>
+    <div class="face back"><small>Answer</small><div class="def">${esc(c.b)}</div><div class="hint">Tap to flip back</div></div></button></div>
+   <div class="row"><button class="btn ghost" id="fprev">Previous</button><button class="btn ghost" id="frev">Review again</button><button class="btn" id="fknow">I know this</button><button class="btn ghost" id="fnext">Next</button></div>
+   <div class="dots">${list.map((x,k)=>`<span class="dot ${fcs[x.i]==='k'?'k':fcs[x.i]==='r'?'r':''} ${k===fi?'c':''}"></span>`).join('')}</div>`;
+  V.dataset.n=list.length;V.dataset.cur=c.i;
+}
+
+function kp(){
+  const ts=TOPICS.filter(t=>topic==='all'||t.id===topic);
+  V.innerHTML='<div class="kp">'+ts.map(t=>`<h2>${esc(t.n)}</h2>`+KP.filter(k=>k.t===t.id).map(k=>`<div class="card"><h3>${esc(k.h)}</h3><ul>${k.p.map(p=>`<li>${esc(p)}</li>`).join('')}</ul></div>`).join('')).join('')+'</div>';
+}
+
+function render(){chips();({mcq,saq,fc,kp})[view]();document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.v===view))}
+
+document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;topic=b.dataset.t;fi=0;flip=false;buildOrder();render()});
+document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;view=b.dataset.v;render()});
+V.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  if(view==='mcq'){
+    if(t.dataset.o!==undefined){ans[order[qi]]=+t.dataset.o;mcq()}
+    else if(t.id==='next'){qi++;mcq();window.scrollTo({top:0})}
+    else if(t.id==='prev'){qi--;mcq()}
+    else if(t.id==='shuf'){shuffled=!shuffled;buildOrder();mcq()}
+    else if(t.id==='again'){buildOrder();mcq()}
+    else if(t.id==='rev'){showRev=!showRev;results()}
+  }else if(view==='saq'&&t.dataset.s!==undefined){
+    const box=document.getElementById('ans'+t.dataset.s);box.hidden=!box.hidden;t.textContent=box.hidden?'Show model answer':'Hide model answer';
+  }else if(view==='fc'){
+    const n=+V.dataset.n,cur=V.dataset.cur;
+    if(t.id==='card'){flip=!flip;t.classList.toggle('f',flip);return}
+    if(t.id==='fcreset'){fcs={};store.set('fc',fcs)}
+    if(t.id==='fknow'){fcs[cur]='k';store.set('fc',fcs);fi=(fi+1)%n}
+    if(t.id==='frev'){fcs[cur]='r';store.set('fc',fcs);fi=(fi+1)%n}
+    if(t.id==='fnext')fi=(fi+1)%n;
+    if(t.id==='fprev')fi=(fi-1+n)%n;
+    flip=false;fc();
+  }
+});
+V.addEventListener('input',e=>{const d=e.target.dataset.d;if(d===undefined)return;drafts[d]=e.target.value;store.set('drafts',drafts)});
+document.addEventListener('keydown',e=>{if(view!=='fc'||e.target.tagName==='TEXTAREA')return;const n=+V.dataset.n;if(e.key==='ArrowRight'){fi=(fi+1)%n;flip=false;fc()}if(e.key==='ArrowLeft'){fi=(fi-1+n)%n;flip=false;fc()}});
+
+stats();buildOrder();render();
+}
+</script>
+</body>
+</html>
